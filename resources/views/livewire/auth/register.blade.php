@@ -9,7 +9,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
-    public string $name = '';
+    public string $firstname = '';
+    public string $infix = '';
+    public string $lastname = '';
+    public string $username = '';
+    public string $birthdate = '';
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -20,12 +24,21 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function register(): void
     {
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'firstname' => ['required', 'string', 'max:255'],
+            'infix' => ['nullable', 'string', 'max:50'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:' . User::class],
+            'birthdate' => ['required', 'date', 'before:today'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        // Set default values for other required fields
+        $validated['is_active'] = true;
+        $validated['is_logged_in'] = false;
+        $validated['logged_in'] = false;
+        $validated['logged_out'] = false;
 
         event(new Registered(($user = User::create($validated))));
 
@@ -42,48 +55,36 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
-        <flux:input
-            wire:model="name"
-            :label="__('Name')"
-            type="text"
-            required
-            autofocus
-            autocomplete="name"
-            :placeholder="__('Full name')"
-        />
+        <!-- First Name -->
+        <flux:input wire:model="firstname" :label="__('First Name')" type="text" required autofocus
+            :placeholder="__('First name')" />
+
+        <!-- Infix -->
+        <flux:input wire:model="infix" :label="__('Infix')" type="text" :placeholder="__('Infix (optional)')" />
+
+        <!-- Last Name -->
+        <flux:input wire:model="lastname" :label="__('Last Name')" type="text" required
+            :placeholder="__('Last name')" />
+
+        <!-- Username -->
+        <flux:input wire:model="username" :label="__('Username')" type="text" required autocomplete="username"
+            :placeholder="__('Username')" />
+
+        <!-- Birth Date -->
+        <flux:input wire:model="birthdate" :label="__('Birth Date')" type="date" required
+            :placeholder="__('Birth date')" />
 
         <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
+        <flux:input wire:model="email" :label="__('Email address')" type="email" required autocomplete="email"
+            placeholder="email@example.com" />
 
         <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
+        <flux:input wire:model="password" :label="__('Password')" type="password" required autocomplete="new-password"
+            :placeholder="__('Password')" viewable />
 
         <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
+        <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" required
+            autocomplete="new-password" :placeholder="__('Confirm password')" viewable />
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">

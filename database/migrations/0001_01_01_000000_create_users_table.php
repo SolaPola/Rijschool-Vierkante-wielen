@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('lastname');
             $table->date('birthdate');
             $table->string('username')->unique();
-            $table->string('passwoord');
+            $table->string('password');
             $table->boolean('is_logged_in')->default(false);
             $table->boolean('logged_in')->default(false);
             $table->boolean('logged_out')->default(false);
@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('note')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });

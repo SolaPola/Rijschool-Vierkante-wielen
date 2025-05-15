@@ -15,13 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'firstname' => 'Test',
-            'infix' => '',
-            'lastname' => 'User',
-            'email' => 'test@example.com',
-        ]);
-
-        
+        // Check if test user already exists to avoid duplicate entry errors
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'firstname' => 'Test',
+                'infix' => '',
+                'lastname' => 'User',
+                'email' => 'admin@example.com',
+                'password' => bcrypt('password'),
+            ]);
+        }
     }
 }
