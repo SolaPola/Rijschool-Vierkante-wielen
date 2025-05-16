@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'lastname' => $this->faker->lastName(),
             'birthdate' => $this->faker->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d'),
             'username' => $this->faker->unique()->userName(),
-            'passwoord' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'is_logged_in' => false,
             'logged_in' => false,
             'logged_out' => false,

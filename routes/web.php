@@ -19,4 +19,15 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/Cars', 'App\Http\Controllers\Carscontroler@index')->name('Cars.index');
+    Route::post('/Cars', 'App\Http\Controllers\Carscontroler@store')->name('Cars.store');
+    Route::get('/Cars/create', 'App\Http\Controllers\Carscontroler@create')->name('Cars.create');
+    Route::get('/Cars/{id}', 'App\Http\Controllers\Carscontroler@show')->name('Cars.show');
+    Route::get('/Cars/{id}/edit', 'App\Http\Controllers\Carscontroler@edit')->name('Cars.edit');
+    Route::put('/Cars/{id}', 'App\Http\Controllers\Carscontroler@update')->name('Cars.update');
+    Route::delete('/Cars/{id}', 'App\Http\Controllers\Carscontroler@destroy')->name('Cars.destroy');
+});
+
 require __DIR__.'/auth.php';

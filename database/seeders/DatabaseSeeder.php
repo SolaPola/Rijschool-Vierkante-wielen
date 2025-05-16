@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Car;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -20,8 +21,8 @@ class DatabaseSeeder extends Seeder
             'infix' => '',
             'lastname' => 'User',
             'email' => 'test@example.com',
+            'password' => bcrypt('password'), // password
         ]);
-
-        
+        Car::factory(10)->create();
     }
 }
