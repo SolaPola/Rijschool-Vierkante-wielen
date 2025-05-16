@@ -14,6 +14,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item  :href="route('Cars.index')" :current="request()->routeIs('Cars.*')" wire:navigate>{{ __('Cars') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -33,7 +34,6 @@
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
                     icon-trailing="chevrons-up-down"
                 />
 
@@ -45,7 +45,6 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
                                     </span>
                                 </span>
 
@@ -83,7 +82,6 @@
 
             <flux:dropdown position="top" align="end">
                 <flux:profile
-                    :initials="auth()->user()->initials()"
                     icon-trailing="chevron-down"
                 />
 
@@ -95,7 +93,6 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
                                     </span>
                                 </span>
 
