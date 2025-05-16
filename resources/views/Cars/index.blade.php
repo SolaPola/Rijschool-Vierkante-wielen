@@ -46,19 +46,19 @@
         <!-- Sidebar -->
         <div class="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
             <nav class="space-y-1">
-                <a href="#" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
+                <a href="{{ route('Cars.index') }}" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
                     <i class="fas fa-car mr-3"></i>Cars
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('Students.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-users mr-3"></i>Students
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('Lessons.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-calendar-alt mr-3"></i>Lessons
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('Reports.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-chart-bar mr-3"></i>Reports
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('settings.profile') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-cog mr-3"></i>Settings
                 </a>
             </nav>
