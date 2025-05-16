@@ -74,7 +74,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div>
-    <div class="w-full max-w-6xl backdrop-blur-md p-8 rounded-2xl shadow-xl flex flex-col gap-6">
+    <div class="w-full max-w-6xl bg-navy-800 backdrop-blur-md p-8 rounded-2xl shadow-xl flex flex-col gap-6">
 
         <div class="text-center mb-4">
             <h2 class="text-2xl font-bold text-blue-900">{{ __('Log in to your account') }}</h2>
@@ -82,33 +82,33 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <!-- Session Status -->
-            <x-auth-session-status class="text-center text-navy-800" :status="session('status')" />
+        <x-auth-session-status class="text-center text-yellow-400" :status="session('status')" />
 
         <form wire:submit="login" class="flex flex-col gap-6">
             <!-- Email Address -->
             <div class="space-y-2">
-                <label for="email" class="block text-sm font-medium text-navy-800">{{ __('Email address') }}</label>
+                <label for="email" class="block text-sm font-medium text-blue-900">{{ __('Email address') }}</label>
                 <input wire:model="email" id="email" type="email" required autofocus autocomplete="email"
                     placeholder="email@example.com"
-                    class="w-full px-4 py-2 bg-navy-300 text-white border border-navy-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400">
+                    class="w-full px-4 py-2 bg-navy-300 text-gray-900 border border-navy-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400">
                 @error('email')
-                    <span class="text-sm text-navy-800">{{ $message }}</span>
+                    <span class="text-sm text-yellow-400">{{ $message }}</span>
                 @enderror
             </div>
 
             <!-- Password -->
             <div class="space-y-2 relative">
-                <label for="password" class="block text-sm font-medium text-navy-800">{{ __('Password') }}</label>
+                <label for="password" class="block text-sm font-medium text-blue-900">{{ __('Password') }}</label>
                 <input wire:model="password" id="password" type="password" required autocomplete="current-password"
                     placeholder="{{ __('Password') }}"
-                    class="w-full px-4 py-2 bg-navy-300 text-navy-800 border border-navy-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400">
+                    class="w-full px-4 py-2 bg-navy-300 text-gray-900 border border-navy-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400">
                 @error('password')
-                    <span class="text-sm text-navy-800">{{ $message }}</span>
+                    <span class="text-sm text-yellow-400">{{ $message }}</span>
                 @enderror
 
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" wire:navigate
-                        class="absolute end-0 top-0 text-sm text-navy-800 hover:text-navy-600 hover:underline">
+                        class="absolute end-0 top-0 text-sm text-yellow-400 hover:text-yellow-300 hover:underline">
                         {{ __('Forgot your password?') }}
                     </a>
                 @endif
