@@ -1,390 +1,370 @@
 <!-- filepath: c:\Users\solap\Herd\rijschoolvierkantwielen2\resources\views\admin\dashboard.blade.php -->
-<x-layouts.app :title="__('Administrator Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
-        <!-- Welcome Banner -->
-        <div class="w-full rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-            <h1 class="text-2xl font-medium text-gray-900 dark:text-white">
-                {{ __('Welcome to the Administrator Dashboard') }}
-            </h1>
-            <p class="mt-2 text-gray-500 dark:text-gray-400">
-                {{ __('Manage the entire driving school system from this central dashboard.') }}
-            </p>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="flex flex-col rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <h3 class="text-sm font-medium uppercase text-gray-500 dark:text-gray-400">{{ __('Total Students') }}</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">127</p>
-                <div class="mt-2">
-                    <span class="text-sm text-green-600 dark:text-green-400">+12% <span class="text-gray-500 dark:text-gray-400">from last month</span></span>
-                </div>
-            </div>
-            <div class="flex flex-col rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <h3 class="text-sm font-medium uppercase text-gray-500 dark:text-gray-400">{{ __('Total Instructors') }}</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">12</p>
-                <div class="mt-2">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">No change from last month</span>
-                </div>
-            </div>
-            <div class="flex flex-col rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <h3 class="text-sm font-medium uppercase text-gray-500 dark:text-gray-400">{{ __('Lessons This Week') }}</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">48</p>
-                <div class="mt-2">
-                    <span class="text-sm text-green-600 dark:text-green-400">+8% <span class="text-gray-500 dark:text-gray-400">from last week</span></span>
-                </div>
-            </div>
-            <div class="flex flex-col rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <h3 class="text-sm font-medium uppercase text-gray-500 dark:text-gray-400">{{ __('Revenue This Month') }}</h3>
-                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">€15,750</p>
-                <div class="mt-2">
-                    <span class="text-sm text-green-600 dark:text-green-400">+15% <span class="text-gray-500 dark:text-gray-400">from last month</span></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <!-- User Management Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('User Management') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('Manage students, instructors, and administrators. Create, edit, and deactivate accounts.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="{{ route('accounts.index') }}" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('Manage Users') }}
-                    </a>
-                </div>
-            </div>
-
-            <!-- Lesson Scheduling Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('Lesson Scheduling') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('View and manage all scheduled lessons. Assign instructors to students.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="#" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('Manage Schedule') }}
-                    </a>
-                </div>
-            </div>
-
-            <!-- System Settings Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('System Settings') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('Configure global settings for the driving school system.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="#" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('Manage Settings') }}
-                    </a>
-                </div>
-            </div>
-
-            <!-- Reports & Analytics Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('Reports & Analytics') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('View reports on student progress, instructor performance, and overall school metrics.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="#" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('View Reports') }}
-                    </a>
-                </div>
-            </div>
-
-            <!-- Financial Management Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('Financial Management') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('Manage payments, invoices, and financial reports for the driving school.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="#" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('Manage Finances') }}
-                    </a>
-                </div>
-            </div>
-
-            <!-- Vehicle Management Card -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 p-3 rounded-md bg-indigo-100 dark:bg-indigo-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                    </div>
-                    <h2 class="ml-3 text-xl font-medium text-gray-900 dark:text-white">
-                        {{ __('Vehicle Management') }}
-                    </h2>
-                </div>
-                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('Manage the fleet of training vehicles. Track maintenance and availability.') }}
-                </p>
-                <div class="mt-6">
-                    <a href="#" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800">
-                        {{ __('Manage Vehicles') }}
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity & Performance -->
-        <div class="grid gap-4 md:grid-cols-3">
-            <!-- Recent Activity -->
-            <div class="md:col-span-2 rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-medium text-gray-900 dark:text-white">{{ __('Recent Activity') }}</h2>
-                    <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                        {{ __('View all') }}
-                    </a>
-                </div>
-                <div class="space-y-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 dark:bg-indigo-900">
-                                <span class="text-xs font-medium text-indigo-600 dark:text-indigo-300">JS</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ __('New student registered') }}: John Smith
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('30 minutes ago') }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 dark:bg-indigo-900">
-                                <span class="text-xs font-medium text-indigo-600 dark:text-indigo-300">MB</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ __('Instructor updated schedule') }}: Maria Brown
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('2 hours ago') }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 dark:bg-indigo-900">
-                                <span class="text-xs font-medium text-indigo-600 dark:text-indigo-300">AD</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ __('Payment received') }}: Anna Davis - €150
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('5 hours ago') }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3 dark:bg-indigo-900">
-                                <span class="text-xs font-medium text-indigo-600 dark:text-indigo-300">RW</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ __('Vehicle maintenance completed') }}: Car #04
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                {{ __('Yesterday at 2:30 PM') }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pass Rate Analytics -->
-            <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-                <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-4">{{ __('Exam Pass Rate') }}</h2>
-                <div class="flex flex-col items-center">
-                    <div class="relative h-36 w-36">
-                        <svg class="h-36 w-36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Background circle -->
-                            <circle cx="18" cy="18" r="16" fill="none" stroke="#e5e7eb" stroke-width="2" class="dark:stroke-gray-700"></circle>
-                            
-                            <!-- Foreground circle (85% complete) -->
-                            <circle cx="18" cy="18" r="16" fill="none" stroke="#4f46e5" stroke-width="2" stroke-dasharray="100.53 100.53" stroke-dashoffset="15.08" class="dark:stroke-indigo-500"></circle>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <span class="text-3xl font-bold text-gray-900 dark:text-white">85%</span>
-                        </div>
-                    </div>
-                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400 text-center">
-                        {{ __('Current pass rate for driving exams') }}
-                    </p>
-                </div>
-                <div class="mt-6">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Theory Exams') }}</span>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">92%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 92%"></div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center mb-1 mt-3">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Practical Exams') }}</span>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">78%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                        <div class="bg-indigo-600 h-2 rounded-full" style="width: 78%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Today's Schedule -->
-        <div class="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-medium text-gray-900 dark:text-white">{{ __('Today\'s Schedule Overview') }}</h2>
-                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
-                    {{ __('View full schedule') }}
-                </a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-neutral-800">
-                        <tr>
-                            <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('Time') }}
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('Student') }}
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('Instructor') }}
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('Topic') }}
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('Status') }}
-                            </th>
-                            <th scope="col" class="relative px-4 py-3.5">
-                                <span class="sr-only">{{ __('Actions') }}</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-neutral-800">
-                        <tr>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">09:00 - 10:30</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Jane Doe</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Mark Wilson</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-500 dark:text-gray-400">Highway Driving</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm">
-                                <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    {{ __('Confirmed') }}
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">{{ __('Details') }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">11:00 - 12:30</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">John Brown</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Sarah Johnson</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-500 dark:text-gray-400">Parallel Parking</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm">
-                                <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    {{ __('Confirmed') }}
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">{{ __('Details') }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">13:00 - 14:30</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Michael Lee</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Mark Wilson</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-500 dark:text-gray-400">City Driving</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm">
-                                <span class="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                    {{ __('Pending') }}
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">{{ __('Details') }}</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">15:00 - 16:30</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Alice Thompson</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-900 dark:text-white">Sarah Johnson</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm text-gray-500 dark:text-gray-400">Exam Preparation</td>
-                            <td class="whitespace-nowrap px-4 py-4 text-sm">
-                                <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    {{ __('Confirmed') }}
-                                </span>
-                            </td>
-                            <td class="whitespace-nowrap px-4 py-4 text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">{{ __('Details') }}</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Rijschool Vierkante Wielen</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .bg-navy-50 { background-color: #f0f4f8; }
+        .bg-navy-100 { background-color: #d8e2f3; }
+        .bg-navy-600 { background-color: #1e40af; }
+        .bg-navy-700 { background-color: #1e3a8a; }
+        .text-navy-600 { color: #1e40af; }
+        .text-navy-700 { color: #1e3a8a; }
+        .text-navy-800 { color: #1e3570; }
+        .text-navy-900 { color: #172554; }
+        .hover\:bg-navy-50:hover { background-color: #f0f4f8; }
+        .hover\:bg-navy-700:hover { background-color: #1e3a8a; }
+        .hover\:text-navy-700:hover { color: #1e3a8a; }
+        .hover\:text-navy-800:hover { color: #1e3570; }
+        .focus\:ring-offset-2:focus { --tw-ring-offset-width: 2px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navigation Bar -->
+    <div class="bg-navy-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Rijschool Vierkante Wielen</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-white">Welcome, {{ Auth::user()->firstname }}</span>
+                <button class="bg-yellow-500 hover:bg-yellow-400 text-navy-800 px-4 py-2 rounded-lg font-medium">
+                    <i class="fas fa-user mr-2"></i>Profile
+                </button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="text-white hover:text-yellow-300">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
-</x-layouts.app>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
+        <!-- Sidebar -->
+        <div class="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
+            <nav class="space-y-1">
+                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="{{ route('accounts.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-calendar-alt mr-3"></i>Lessons
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-chalkboard-teacher mr-3"></i>Instructors
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-user-graduate mr-3"></i>Students
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-car mr-3"></i>Vehicles
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-chart-bar mr-3"></i>Reports
+                </a>
+                <a href="{{ route('settings.profile') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="flex-1">
+            <!-- Page header -->
+            <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-navy-800">Administrator Dashboard</h2>
+                <a href="#" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-navy-800 uppercase tracking-widest hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all">
+                    <i class="fas fa-plus mr-2"></i>Quick Actions
+                </a>
+            </div>
+            
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-navy-600">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-navy-100 text-navy-800 mr-4">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase">Total Students</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $totalStudents }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-800 mr-4">
+                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase">Total Instructors</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $totalInstructors }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-800 mr-4">
+                            <i class="fas fa-calendar-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase">Scheduled Lessons</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $scheduledLessons }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-800 mr-4">
+                            <i class="fas fa-check-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase">Exam Pass Rate</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $passRate }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content Sections -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-navy-50">
+                        <h3 class="font-medium text-navy-800">Quick Actions</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="{{ route('accounts.create') }}" class="flex flex-col items-center p-4 bg-navy-50 rounded-lg hover:bg-navy-100">
+                                <i class="fas fa-user-plus text-navy-700 text-xl mb-2"></i>
+                                <span class="text-sm font-medium text-navy-800">Add User</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-navy-50 rounded-lg hover:bg-navy-100">
+                                <i class="fas fa-calendar-plus text-navy-700 text-xl mb-2"></i>
+                                <span class="text-sm font-medium text-navy-800">Schedule Lesson</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-navy-50 rounded-lg hover:bg-navy-100">
+                                <i class="fas fa-file-invoice text-navy-700 text-xl mb-2"></i>
+                                <span class="text-sm font-medium text-navy-800">Create Invoice</span>
+                            </a>
+                            <a href="#" class="flex flex-col items-center p-4 bg-navy-50 rounded-lg hover:bg-navy-100">
+                                <i class="fas fa-chart-line text-navy-700 text-xl mb-2"></i>
+                                <span class="text-sm font-medium text-navy-800">Generate Report</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-navy-50">
+                        <h3 class="font-medium text-navy-800">Recent Activity</h3>
+                    </div>
+                    <div class="p-4">
+                        <ul class="divide-y divide-gray-200">
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-blue-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">New student registered</p>
+                                        <p class="text-xs text-gray-500">30 minutes ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-green-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-calendar-check text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Lesson scheduled</p>
+                                        <p class="text-xs text-gray-500">2 hours ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-yellow-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-money-bill-wave text-yellow-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Payment received</p>
+                                        <p class="text-xs text-gray-500">5 hours ago</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                        <i class="fas fa-trophy text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Exam passed</p>
+                                        <p class="text-xs text-gray-500">Yesterday</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-3 flex justify-center">
+                            <a href="#" class="text-sm text-navy-600 hover:text-navy-800 font-medium">View all activity</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-navy-50">
+                        <h3 class="font-medium text-navy-800">Upcoming Events</h3>
+                    </div>
+                    <div class="p-4">
+                        <ul class="divide-y divide-gray-200">
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-navy-700 text-white w-10 h-10 rounded-md flex items-center justify-center mr-3">
+                                        <span class="font-bold">15</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Group Theory Class</p>
+                                        <p class="text-xs text-gray-500">May 15, 2024 · 10:00 AM</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-navy-700 text-white w-10 h-10 rounded-md flex items-center justify-center mr-3">
+                                        <span class="font-bold">18</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Instructor Meeting</p>
+                                        <p class="text-xs text-gray-500">May 18, 2024 · 2:00 PM</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="py-3">
+                                <div class="flex items-center">
+                                    <div class="bg-navy-700 text-white w-10 h-10 rounded-md flex items-center justify-center mr-3">
+                                        <span class="font-bold">22</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-navy-800">Vehicle Maintenance</p>
+                                        <p class="text-xs text-gray-500">May 22, 2024 · All Day</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-3 flex justify-center">
+                            <a href="#" class="text-sm text-navy-600 hover:text-navy-800 font-medium">View calendar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Lessons Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-navy-50 flex justify-between items-center">
+                    <h3 class="font-medium text-navy-800">Recent Lessons</h3>
+                    <a href="#" class="text-sm text-navy-600 hover:text-navy-800 font-medium">View all lessons</a>
+                </div>
+                
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-navy-700 text-xs uppercase">
+                            <tr>
+                                <th class="px-6 py-3 text-white">Student</th>
+                                <th class="px-6 py-3 text-white">Instructor</th>
+                                <th class="px-6 py-3 text-white">Date</th>
+                                <th class="px-6 py-3 text-white">Time</th>
+                                <th class="px-6 py-3 text-white">Status</th>
+                                <th class="px-6 py-3 text-white">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-navy-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-navy-900">
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                            <span class="text-xs font-medium text-gray-700">JD</span>
+                                        </div>
+                                        <span>John Doe</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">Mark Wilson</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">May 10, 2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">09:00 - 10:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Completed</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <a href="#" class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-navy-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-navy-900">
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                            <span class="text-xs font-medium text-gray-700">JS</span>
+                                        </div>
+                                        <span>Jane Smith</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">Sarah Johnson</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">May 11, 2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">13:00 - 14:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Planned</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <a href="#" class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-navy-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-navy-900">
+                                    <div class="flex items-center">
+                                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                            <span class="text-xs font-medium text-gray-700">RB</span>
+                                        </div>
+                                        <span>Robert Brown</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">Mark Wilson</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">May 12, 2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">15:00 - 16:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Canceled</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <a href="#" class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

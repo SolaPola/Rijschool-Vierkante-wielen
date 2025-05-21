@@ -16,9 +16,26 @@ class AdminDashboardController extends Controller
      */
     public function index()
     {
-        // Get total students count
+        // Get the student role id
+        $studentRoleId = Role::where('name', 'student')->first()->id;
 
+        // Count total students (active users with student role)
+        $totalStudents = User::where('role_id', $studentRoleId)
+            ->where('is_active', true)
+            ->count();
 
-        return view('admin.dashboard');
+        // Count total instructors
+        $instructorRoleId = Role::where('name', 'instructor')->first()->id;
+        $totalInstructors = User::where('role_id', $instructorRoleId)
+            ->where('is_active', true)
+            ->count();
+
+        // Count scheduled lessons
+        $scheduledLessons = Lesson::where('status', 'scheduled')->count();
+
+        // Calculate exam pass rate (this would require exam data, using placeholder for now)
+        $passRate = 85; // Placeholder - would need to be calculated from actual exam data
+
+        return view('admin.dashboard', compact('totalStudents', 'totalInstructors', 'scheduledLessons', 'passRate'));
     }
 }
