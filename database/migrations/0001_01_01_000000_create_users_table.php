@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('note')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->unsignedBigInteger('role_id')->default(1); // Default role is student (1)
             $table->rememberToken();
             $table->timestamps();
         });
