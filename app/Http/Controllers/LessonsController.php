@@ -18,10 +18,36 @@ class LessonsController extends Controller
      */
     public function index()
     {
-        // Fetch all driving lessons using the stored procedure
-        $lessonsArray = DB::select('CALL GetAllDrivingLessons()');
-        $lessons = collect($lessonsArray); // Convert array to collection
-        return view('lessons.index', compact('lessons'));
+        // Fetch all lessons using stored procedure
+        $allLessons = collect(DB::select('CALL GetAllDrivingLessons()'));
+        
+        // Calculate totals for stats
+        $totalLessons = $allLessons->count();
+        $plannedLessons = $allLessons->where('lesson_status', 'Planned')->count();
+        $completedLessons = $allLessons->where('lesson_status', 'Completed')->count();
+        $canceledLessons = $allLessons->where('lesson_status', 'Canceled')->count();
+        
+        // Paginate the collection manually
+        $page = request()->get('page', 1);
+        $perPage = 20;
+        $currentPageItems = $allLessons->slice(($page - 1) * $perPage, $perPage)->values();
+        
+        // Create a paginator manually
+        $lessons = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $totalLessons,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
+        return view('lessons.index', compact(
+            'lessons', 
+            'totalLessons', 
+            'plannedLessons', 
+            'completedLessons', 
+            'canceledLessons'
+        ));
     }
 
     /**

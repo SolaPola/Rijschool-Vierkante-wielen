@@ -83,7 +83,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 uppercase">Total Lessons</p>
-                            <p class="text-2xl font-bold text-navy-800">{{ count($lessons) }}</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $totalLessons }}</p>
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                         <div>
                             <p class="text-sm text-gray-500 uppercase">Planned</p>
                             <p class="text-2xl font-bold text-navy-800">
-                                {{ $lessons->where('lesson_status', 'Planned')->count() }}
+                                {{ $plannedLessons }}
                             </p>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                         <div>
                             <p class="text-sm text-gray-500 uppercase">Completed</p>
                             <p class="text-2xl font-bold text-navy-800">
-                                {{ $lessons->where('lesson_status', 'Completed')->count() }}
+                                {{ $completedLessons }}
                             </p>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                         <div>
                             <p class="text-sm text-gray-500 uppercase">Canceled</p>
                             <p class="text-2xl font-bold text-navy-800">
-                                {{ $lessons->where('lesson_status', 'Canceled')->count() }}
+                                {{ $canceledLessons }}
                             </p>
                         </div>
                     </div>
@@ -166,7 +166,6 @@
                     <table class="w-full text-left">
                         <thead class="bg-navy-700 text-xs uppercase">
                             <tr>
-                                <th class="px-6 py-3 text-white">ID</th>
                                 <th class="px-6 py-3 text-white">Student</th>
                                 <th class="px-6 py-3 text-white">Instructor</th>
                                 <th class="px-6 py-3 text-white">Car</th>
@@ -179,15 +178,14 @@
                         <tbody class="divide-y divide-gray-200">
                             @forelse ($lessons as $lesson)
                             <tr class="hover:bg-navy-50">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $lesson->id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap font-medium text-navy-900">{{ $lesson->student_name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $lesson->instructor_name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $lesson->brand }} {{ $lesson->model }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ $lesson->brand }} {{ $lesson->type }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">
-                                    {{ date('d/m/Y H:i', strtotime($lesson->start_datetime)) }}
+                                    {{ date('d/m/Y H:i', strtotime($lesson->start_date)) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-700">
-                                    {{ date('d/m/Y H:i', strtotime($lesson->end_datetime)) }}
+                                    {{ date('d/m/Y H:i', strtotime($lesson->end_date)) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($lesson->lesson_status == 'Planned')
@@ -224,7 +222,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-10 text-center">
+                                <td colspan="7" class="px-6 py-10 text-center">
                                     <div class="flex flex-col items-center">
                                         <i class="fas fa-calendar-times text-4xl text-gray-300 mb-3"></i>
                                         <p class="text-gray-500 mb-2">No lessons scheduled</p>
@@ -239,29 +237,82 @@
                 
                 <!-- Pagination -->
                 <div class="border-t border-gray-200">
-                    <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
-                        aria-label="Table navigation">
-                        <span class="text-sm text-gray-700">
-                            Showing <span class="font-medium text-navy-800">1-{{ count($lessons) }}</span> of 
-                            <span class="font-medium text-navy-800">{{ count($lessons) }}</span>
-                        </span>
-                        <ul class="inline-flex items-stretch -space-x-px">
-                            <li>
-                                <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-navy-600 bg-white rounded-l-lg border border-gray-300 hover:bg-navy-50">
-                                    <i class="fas fa-chevron-left"></i>
+                    <div class="px-4 py-3 flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            @if ($lessons->onFirstPage())
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-md">
+                                    Previous
+                                </span>
+                            @else
+                                <a href="{{ $lessons->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-navy-700 bg-white border border-gray-300 rounded-md hover:bg-navy-50">
+                                    Previous
                                 </a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center justify-center px-3 py-2 text-navy-600 bg-navy-50 border border-gray-300">1</a>
-                            </li>
-                            <li>
-                                <a href="#" class="flex items-center justify-center h-full py-1.5 px-3 text-navy-600 bg-white rounded-r-lg border border-gray-300 hover:bg-navy-50">
-                                    <i class="fas fa-chevron-right"></i>
+                            @endif
+                            
+                            @if ($lessons->hasMorePages())
+                                <a href="{{ $lessons->nextPageUrl() }}" class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium text-navy-700 bg-white border border-gray-300 rounded-md hover:bg-navy-50">
+                                    Next
                                 </a>
-                            </li>
-                        </ul>
-                    </nav>
+                            @else
+                                <span class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-md">
+                                    Next
+                                </span>
+                            @endif
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing
+                                    <span class="font-medium">{{ $lessons->firstItem() }}</span>
+                                    to
+                                    <span class="font-medium">{{ $lessons->lastItem() }}</span>
+                                    of
+                                    <span class="font-medium">{{ $lessons->total() }}</span>
+                                    results
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    {{-- Previous Page Link }}
+                                    @if ($lessons->onFirstPage())
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-default">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left h-5 w-5"></i>
+                                        </span>
+                                    @else
+                                        <a href="{{ $lessons->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-navy-500 hover:bg-navy-50">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left h-5 w-5"></i>
+                                        </a>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @for ($i = 1; $i <= $lessons->lastPage(); $i++)
+                                        @if ($i == $lessons->currentPage())
+                                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-navy-50 text-sm font-medium text-navy-700">{{ $i }}</span>
+                                        @else
+                                            <a href="{{ $lessons->url($i) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-navy-500 hover:bg-navy-50">{{ $i }}</a>
+                                        @endif
+                                    @endfor
+
+                                    {{-- Next Page Link --}}
+                                    @if ($lessons->hasMorePages())
+                                        <a href="{{ $lessons->nextPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-navy-500 hover:bg-navy-50">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right h-5 w-5"></i>
+                                        </a>
+                                    @else
+                                        <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-default">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right h-5 w-5"></i>
+                                        </span>
+                                    @endif
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
         </div>
     </div>
