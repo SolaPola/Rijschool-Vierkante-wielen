@@ -11,37 +11,6 @@ class Lesson extends Model
 {
     use HasFactory;
 
-
-    protected $fillable = [
-        'instructor_id',
-        'student_id',
-        'title',
-        'description',
-        'start_time',
-        'end_time',
-        'status',  // 'scheduled', 'confirmed', 'completed', 'cancelled'
-        'notes',
-        'vehicle_id',
-    ];
-
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-    ];
-
-    public function instructor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'instructor_id');
-    }
-
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'student_id');
-    }
-
-
-
-
     /**
      * The table associated with the model.
      *
@@ -65,7 +34,17 @@ class Lesson extends Model
         'student_comment',
         'commentary_instructor',
         'remark',
-        'isactive'
+        'isactive'          // 0 = inactive, 1 = active
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'start_datetime' => 'datetime',
+        'end_datetime' => 'datetime',
     ];
 
     /**
@@ -91,5 +70,4 @@ class Lesson extends Model
     {
         return $this->belongsTo(Car::class, 'car_id');
     }
-
 }

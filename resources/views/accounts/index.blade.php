@@ -108,7 +108,7 @@
                 <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-user-graduate mr-3"></i>Students
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('Admin.Cars.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-car mr-3"></i>Vehicles
                 </a>
                 <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">

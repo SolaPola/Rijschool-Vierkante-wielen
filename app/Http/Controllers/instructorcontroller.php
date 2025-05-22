@@ -76,6 +76,7 @@ class InstructorController extends Controller
             ));
         } catch (\Exception $e) {
             return back()->with('error', 'Error retrieving instructors: ' . $e->getMessage());
+            dd($e->getMessage());
         }
     }
     

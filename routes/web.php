@@ -33,9 +33,8 @@ Route::fallback(function () {
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');
 
 
-   //route to instructor overview
-Route::resource('instructors', InstructorController::class);
-Route::get('/instructors/{instructor}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
+   //route to instructors overview
+
 
 //route to package overview
 Route::get('/packages', [App\Http\Controllers\PackageController::class, 'index'])->name('packages.index');
@@ -56,9 +55,9 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
 });
 
 // Instructor specific routes
-Route::middleware([InstructorMiddleware::class])->prefix('instructor')->group(function () {
-    Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
-    Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructor.students');
+Route::middleware([InstructorMiddleware::class])->prefix('instructors')->group(function () {
+    Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructors.dashboard');
+    Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructors.students');
 });
 
 // Admin specific routes
@@ -73,11 +72,15 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
     Route::get('/accounts/{user}/edit', [UserController::class, 'edit'])->name('accounts.edit');
     Route::put('/accounts/{user}', [UserController::class, 'update'])->name('accounts.update');
     Route::delete('/accounts/{user}', [UserController::class, 'destroy'])->name('accounts.destroy');
+    
+    
+    Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
+    Route::get('/instructors/{instructors}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
 });
 
 require __DIR__ . '/auth.php';
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware([InstructorMiddleware::class])->group(function () {
 
     Route::get('/Cars', 'App\Http\Controllers\Carscontroler@index')->name('Cars.index');
     Route::post('/Cars', 'App\Http\Controllers\Carscontroler@store')->name('Cars.store');
@@ -86,6 +89,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/Cars/{id}/edit', 'App\Http\Controllers\Carscontroler@edit')->name('Cars.edit');
     Route::put('/Cars/{id}', 'App\Http\Controllers\Carscontroler@update')->name('Cars.update');
     Route::delete('/Cars/{id}', 'App\Http\Controllers\Carscontroler@destroy')->name('Cars.destroy');
+});
+Route::middleware([AdminMiddleware::class])->group(function () {
+
+    Route::get('/Admin/Cars', 'App\Http\Controllers\Carscontroler@index')->name('Admin.Cars.index');
+    Route::post('/Admin/Cars', 'App\Http\Controllers\Carscontroler@store')->name('Admin.Cars.store');
+    Route::get('/Admin/Cars/create', 'App\Http\Controllers\Carscontroler@create')->name('Admin.Cars.create');
+    Route::get('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@show')->name('Admin.Cars.show');
+    Route::get('/Admin/Cars/{id}/edit', 'App\Http\Controllers\Carscontroler@edit')->name('Admin.Cars.edit');
+    Route::put('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@update')->name('Admin.Cars.update');
+    Route::delete('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@destroy')->name('Admin.Cars.destroy');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -121,16 +134,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth'])->group(function () {
-    // Students Routes
-    Route::get('/Students', 'App\Http\Controllers\StudentsController@index')->name('Students.index');
-    Route::post('/Students', 'App\Http\Controllers\StudentsController@store')->name('Students.store');
-    Route::get('/Students/create', 'App\Http\Controllers\StudentsController@create')->name('Students.create');
-    Route::get('/Students/{id}', 'App\Http\Controllers\StudentsController@show')->name('Students.show');
-    Route::get('/Students/{id}/edit', 'App\Http\Controllers\StudentsController@edit')->name('Students.edit');
-    Route::put('/Students/{id}', 'App\Http\Controllers\StudentsController@update')->name('Students.update');
-    Route::delete('/Students/{id}', 'App\Http\Controllers\StudentsController@destroy')->name('Students.destroy');
-});
+
 
 Route::middleware(['auth'])->group(function () {
     // Lessons Routes
@@ -144,7 +148,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Additional Lessons Routes
     Route::get('/Lessons/student/{studentId}', 'App\Http\Controllers\LessonsController@getStudentLessons')->name('Lessons.student');
-    Route::get('/Lessons/instructor', 'App\Http\Controllers\LessonsController@getInstructorLessons')->name('Lessons.instructor');
+    Route::get('/Lessons/instructors', 'App\Http\Controllers\LessonsController@getInstructorLessons')->name('Lessons.instructors');
     Route::get('/Lessons/car', 'App\Http\Controllers\LessonsController@getCarLessons')->name('Lessons.car');
 });
 

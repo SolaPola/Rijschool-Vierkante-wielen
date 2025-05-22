@@ -45,16 +45,22 @@
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
         <!-- Sidebar -->
-        <div class="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
+<div class="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
             <nav class="space-y-1">
-                <a href="{{ route('dashboard') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('instructors.dashboard') }}" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
                     <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                 </a>
-                <a href="{{ route('instructor.lessons') }}" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
-                    <i class="fas fa-calendar-alt mr-3"></i>My Lessons
+                <a href="{{ route('instructors.students') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-user-graduate mr-3"></i>My Students
                 </a>
-                <a href="{{ route('Lessons.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
-                    <i class="fas fa-users mr-3"></i>All Lessons
+                    <a href="{{ route('Lessons.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-calendar-alt mr-3"></i>Lessons
+                </a>
+                <a href="{{ route('Cars.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-car mr-3"></i>Vehicles
+                </a>
+                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                    <i class="fas fa-chart-bar mr-3"></i>Reports
                 </a>
                 <a href="{{ route('settings.profile') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-cog mr-3"></i>Settings

@@ -48,7 +48,7 @@
     
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-        <!-- Sidebar -->
+         <!-- Sidebar -->
         <div class="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
             <nav class="space-y-1">
                 <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 rounded-lg bg-navy-600 text-white font-medium">
@@ -57,16 +57,14 @@
                 <a href="{{ route('accounts.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-users mr-3"></i>Users
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('Lessons.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-calendar-alt mr-3"></i>Lessons
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+                <a href="{{ route('instructors.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-chalkboard-teacher mr-3"></i>Instructors
                 </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
-                    <i class="fas fa-user-graduate mr-3"></i>Students
-                </a>
-                <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
+
+                <a href="{{ route('Admin.Cars.index') }}" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
                     <i class="fas fa-car mr-3"></i>Vehicles
                 </a>
                 <a href="#" class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-navy-50 hover:text-navy-700">
@@ -77,6 +75,7 @@
                 </a>
             </nav>
         </div>
+        
         
         <!-- Content Area -->
         <div class="flex-1">
