@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'logged_in' => false,
             'logged_out' => false,
             'is_active' => true,
-            'note' => $this->faker->optional(0.7)->sentence(),
+            'remark' => $this->faker->optional(0.7)->sentence(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),

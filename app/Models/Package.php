@@ -9,4 +9,12 @@ class Package extends Model
 {
     /** @use HasFactory<\Database\Factories\PackageFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'type',
+        'number_of_lessons',
+        'price_per_lesson',
+        'isactive',
+        'remark'
+    ];
 }

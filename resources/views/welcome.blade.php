@@ -118,6 +118,12 @@
                 <p class="mt-4 text-lg text-gray-600">
                     We offer various packages tailored to your specific needs
                 </p>
+                <div class="mt-4">
+                    <a href="/packages" 
+                       class="inline-flex items-center px-5 py-2 border border-transparent text-base font-medium rounded-md text-navy bg-yellow hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                        View All Packages
+                    </a>
+                </div>
             </div>
 
             <div class="mt-10">
