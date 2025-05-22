@@ -94,7 +94,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 uppercase">In Maintenance</p>
-                            <p class="text-2xl font-bold text-navy-800">2</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $cars->where('status', 'in_maintenance')->count() }}</p>
                         </div>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500 uppercase">Available</p>
-                            <p class="text-2xl font-bold text-navy-800">{{ $cars->count() - 2 }}</p>
+                            <p class="text-2xl font-bold text-navy-800">{{ $cars->count() }}</p>
                         </div>
                     </div>
                 </div>
