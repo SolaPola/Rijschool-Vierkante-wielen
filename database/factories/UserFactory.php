@@ -23,15 +23,14 @@ class UserFactory extends Factory
             'lastname' => $this->faker->lastName(),
             'birthdate' => $this->faker->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d'),
             'username' => $this->faker->unique()->userName(),
-            'passwoord' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'is_logged_in' => false,
             'logged_in' => false,
             'logged_out' => false,
             'is_active' => true,
-            'note' => $this->faker->optional(0.7)->sentence(),
+            'remark' => $this->faker->optional(0.7)->sentence(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ];
     }

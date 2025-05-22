@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Instructor;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,15 +14,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory(50)->create();
+        Instructor::factory(50)->create();
 
-        User::factory()->create([
-            'firstname' => 'Test',
-            'infix' => '',
-            'lastname' => 'User',
-            'email' => 'test@example.com',
-        ]);
-
-        
+        // Check if test user already exists to avoid duplicate entry errors
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'firstname' => 'Test',
+                'infix' => '',
+                'lastname' => 'User',
+                'email' => 'admin@example.com',
+                'password' => bcrypt('password'),
+            ]);
+        }
     }
 }
