@@ -307,49 +307,23 @@
                                     </td>
                                 </tr>
                             @empty
-                                <!-- Empty state rows -->
-                                <tr class="hover:bg-navy-50">
-                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-navy-900">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="h-8 w-8 rounded-full bg-navy-100 flex items-center justify-center mr-3">
-                                                <span class="text-xs font-medium text-navy-700">JD</span>
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 whitespace-nowrap text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <div class="text-navy-700 mb-3">
+                                                <i class="fas fa-search text-4xl"></i>
                                             </div>
-                                            <div>
-                                                <span>John Doe</span>
-                                                <p class="text-xs text-gray-500">ID: 1001</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">
-                                        <div>
-                                            <div>john.doe@example.com</div>
-                                            <div class="text-xs text-gray-500">+31 6 12345678</div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">
-                                        <span class="font-medium">Standard (20 Lessons)</span>
-                                        <div class="text-xs text-gray-500">10-01-2024</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">Mark Wilson</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Active</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center space-x-3">
-                                            <a href="#"
-                                                class="bg-yellow-500 hover:bg-yellow-400 text-navy-800 py-1 px-3 rounded-md text-sm inline-flex items-center">
-                                                <i class="fas fa-edit mr-1"></i> Edit
-                                            </a>
-                                            <a href="#"
-                                                class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
-                                                <i class="fas fa-calendar-alt mr-1"></i> Lessons
+                                            <h3 class="text-lg font-medium text-gray-700 mb-1">No students found</h3>
+                                            <p class="text-gray-500 mb-4">Search with a different name or try again
+                                                later
+                                            </p>
+                                            <a href="{{ route('instructor.students') }}"
+                                                class="px-4 py-2 bg-navy-600 text-white rounded-md hover:bg-navy-700 inline-flex items-center">
+                                                <i class="fas fa-sync-alt mr-2"></i> Refresh Results
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Additional empty state rows remain unchanged -->
                             @endforelse
                         </tbody>
                     </table>
@@ -393,15 +367,23 @@
             const packageFilter = document.getElementById('package-filter');
             const searchInput = document.getElementById('search');
             const tableRows = document.querySelectorAll('tbody tr');
+            const tableBody = document.querySelector('tbody');
 
             function applyFilters() {
                 const statusValue = statusFilter.value.toLowerCase();
                 const packageValue = packageFilter.value.toLowerCase();
                 const searchValue = searchInput.value.toLowerCase();
 
+                let visibleCount = 0;
+
                 tableRows.forEach(row => {
+                    if (row.querySelector('td[colspan="6"]')) {
+                        // This is already the "no results" row
+                        return;
+                    }
+
                     const studentName = row.querySelector('td:first-child').textContent.toLowerCase();
-                    const statusText = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
+                    const statusText = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
                     const packageText = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
 
                     const matchesStatus = !statusValue || statusText.includes(statusValue);
@@ -410,11 +392,60 @@
 
                     if (matchesStatus && matchesPackage && matchesSearch) {
                         row.style.display = '';
+                        visibleCount++;
                     } else {
                         row.style.display = 'none';
                     }
                 });
+
+                // Check if we need to show the "no results" message
+                const noResultsRow = document.getElementById('no-results-row');
+
+                if (visibleCount === 0 && !noResultsRow && tableRows.length > 0) {
+                    // Create and insert a "no results from filter" row
+                    const newRow = document.createElement('tr');
+                    newRow.id = 'no-results-row';
+                    newRow.innerHTML = `
+                        <td colspan="6" class="px-6 py-12 whitespace-nowrap text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="text-navy-700 mb-3">
+                                    <i class="fas fa-filter text-4xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-700 mb-1">No matching students</h3>
+                                <p class="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
+                                <button onclick="resetFilters()" 
+                                       class="px-4 py-2 bg-navy-600 text-white rounded-md hover:bg-navy-700 inline-flex items-center">
+                                    <i class="fas fa-times mr-2"></i> Clear Filters
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                } else if (visibleCount > 0 && noResultsRow) {
+                    // Remove the "no results" row if we have visible results again
+                    noResultsRow.remove();
+                }
             }
+
+            // Function to reset all filters
+            window.resetFilters = function() {
+                statusFilter.value = '';
+                packageFilter.value = '';
+                searchInput.value = '';
+
+                // Remove the "no results" row
+                const noResultsRow = document.getElementById('no-results-row');
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+
+                // Show all rows except the original "no results" row
+                tableRows.forEach(row => {
+                    if (!row.querySelector('td[colspan="6"]')) {
+                        row.style.display = '';
+                    }
+                });
+            };
 
             statusFilter.addEventListener('change', applyFilters);
             packageFilter.addEventListener('change', applyFilters);
