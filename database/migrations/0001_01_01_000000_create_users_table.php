@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('logged_in')->default(false);
             $table->boolean('logged_out')->default(false);
             $table->boolean('is_active')->default(1);
-            $table->string('note')->nullable();
+            $table->string('remark')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

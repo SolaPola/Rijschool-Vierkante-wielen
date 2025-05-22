@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Instructor;
 use App\Models\User;
 use App\Models\Car;
 use App\Models\Lesson;
@@ -19,7 +20,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(PackageSeeder::class);
+       
       
         User::factory()->create([
             'firstname' => 'Test',

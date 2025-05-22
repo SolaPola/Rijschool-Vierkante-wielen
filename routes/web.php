@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\instructorcontroller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Carscontroler;
 use App\Http\Controllers\Userscontroler;
@@ -17,6 +18,13 @@ Route::get('/', function () {
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+   //route to instructor overview
+Route::resource('instructors', InstructorController::class);
+Route::get('/instructors/{instructor}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
+
+//route to package overview
+Route::get('/packages', [App\Http\Controllers\PackageController::class, 'index'])->name('packages.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -115,6 +123,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student/lessons/{id}', [LessonsController::class, 'studentShowLesson'])->name('student.lessons.show');
     Route::get('/student/lessons/{id}/feedback', [LessonsController::class, 'studentFeedbackForm'])->name('student.lessons.feedback');
     Route::post('/student/lessons/{id}/feedback', [LessonsController::class, 'studentStoreFeedback'])->name('student.lessons.saveFeedback');
+
 
 
 
