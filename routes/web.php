@@ -14,10 +14,10 @@ use Livewire\Volt\Volt;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Add error page route for demonstration purposes
-Route::get('/fail', function () {
-    return view('errors.site-error');
-})->name('error.demo');
+// Add 404 error route for demonstration purposes
+Route::fallback(function () {
+    return response()->view('errors.404', [], 404);
+});
 
 // Default dashboard routes to HomeController which will handle role-based redirection
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');
