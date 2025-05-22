@@ -7,6 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'relation_number',
+        'isactive',
+        'remark',
+    ];
+
+    /**
+     * Get the user associated with the student.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -17,19 +18,21 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-protected $fillable = [
-    'firstname',
-    'infix',
-    'lastname',
-    'username',
-    'birthdate',
-    'email',
-    'password',
-    'is_active',
-    'is_logged_in',
-    'logged_in',
-    'logged_out',
-];
+    protected $fillable = [
+        'firstname',
+        'infix',
+        'lastname',
+        'username',
+        'birthdate',
+        'email',
+        'password',
+        'is_active',
+        'is_logged_in',
+        'logged_in',
+        'logged_out',
+        'role_id',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -51,5 +54,45 @@ protected $fillable = [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the role associated with the user.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Check if the user has a specific role.
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role->name === $roleName;
+    }
+
+    /**
+     * Check if the user is a student.
+     */
+    public function isStudent(): bool
+    {
+        return $this->hasRole('student');
+    }
+
+    /**
+     * Check if the user is an instructor.
+     */
+    public function isInstructor(): bool
+    {
+        return $this->hasRole('instructor');
+    }
+
+    /**
+     * Check if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('administrator');
     }
 }
