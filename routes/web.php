@@ -14,10 +14,10 @@ Route::view('dashboard', 'dashboard')
 
    //route to instructor overview
 Route::resource('instructors', InstructorController::class);
-
-
-// Add this route definition
 Route::get('/instructors/{instructor}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
+
+//route to package overview
+Route::get('/packages', [App\Http\Controllers\PackageController::class, 'index'])->name('packages.index');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
