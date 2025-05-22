@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('firstname');
-            $table->string('infix');
+            $table->string('infix')->nullable();
             $table->string('lastname');
             $table->date('birthdate');
             $table->string('username')->unique();
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('logged_in')->default(false);
             $table->boolean('logged_out')->default(false);
             $table->boolean('is_active')->default(1);
-            $table->string('note')->nullable();
+            $table->string('remark')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
