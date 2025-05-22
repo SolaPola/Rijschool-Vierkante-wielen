@@ -86,6 +86,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/Lessons/{id}/edit', 'App\Http\Controllers\LessonsController@edit')->name('Lessons.edit');
     Route::put('/Lessons/{id}', 'App\Http\Controllers\LessonsController@update')->name('Lessons.update');
     Route::delete('/Lessons/{id}', 'App\Http\Controllers\LessonsController@destroy')->name('Lessons.destroy');
+    
+    // Additional Lessons Routes
+    Route::get('/Lessons/student/{studentId}', 'App\Http\Controllers\LessonsController@getStudentLessons')->name('Lessons.student');
+    Route::get('/Lessons/instructor', 'App\Http\Controllers\LessonsController@getInstructorLessons')->name('Lessons.instructor');
+    Route::get('/Lessons/car', 'App\Http\Controllers\LessonsController@getCarLessons')->name('Lessons.car');
 });
 
 Route::middleware(['auth'])->group(function () {
