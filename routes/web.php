@@ -34,6 +34,7 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
 // Instructor specific routes
 Route::middleware([InstructorMiddleware::class])->prefix('instructor')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
+    Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructor.students');
 });
 
 // Admin specific routes

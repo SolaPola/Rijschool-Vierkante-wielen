@@ -30,48 +30,48 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // // Instructor user
-        // if (!User::where('email', 'instructor@example.com')->exists()) {
-        //     User::factory()->create([
-        //         'firstname' => 'Instructor',
-        //         'infix' => '',
-        //         'lastname' => 'User',
-        //         'username' => 'instructor',
-        //         'birthdate' => '1985-05-15',
-        //         'email' => 'instructor@example.com',
-        //         'password' => bcrypt('password'),
-        //         'role_id' => Role::where('name', 'instructor')->first()->id,
-        //     ]);
-        // }
+        // Instructor user
+        if (!User::where('email', 'instructor@example.com')->exists()) {
+            User::factory()->create([
+                'firstname' => 'Instructor',
+                'infix' => '',
+                'lastname' => 'User',
+                'username' => 'instructor',
+                'birthdate' => '1985-05-15',
+                'email' => 'instructor@example.com',
+                'password' => bcrypt('password'),
+                'role_id' => Role::where('name', 'instructor')->first()->id,
+            ]);
+        }
 
-        // // Student user
-        // if (!User::where('email', 'student@example.com')->exists()) {
-        //     User::factory()->create([
-        //         'firstname' => 'Student',
-        //         'infix' => '',
-        //         'lastname' => 'User',
-        //         'username' => 'student',
-        //         'birthdate' => '2000-10-20',
-        //         'email' => 'student@example.com',
-        //         'password' => bcrypt('password'),
-        //         'role_id' => Role::where('name', 'student')->first()->id,
-        //     ]);
-        // }
+        // Student user
+        if (!User::where('email', 'student@example.com')->exists()) {
+            User::factory()->create([
+                'firstname' => 'Student',
+                'infix' => '',
+                'lastname' => 'User',
+                'username' => 'student',
+                'birthdate' => '2000-10-20',
+                'email' => 'student@example.com',
+                'password' => bcrypt('password'),
+                'role_id' => Role::where('name', 'student')->first()->id,
+            ]);
+        }
 
-        // // Create 10 additional students
-        // for ($i = 1; $i <= 10; $i++) {
-        //     if (!User::where('email', "student{$i}@example.com")->exists()) {
-        //         User::factory()->create([
-        //             'firstname' => "Student{$i}",
-        //             'infix' => '',
-        //             'lastname' => 'Test',
-        //             'username' => "student{$i}",
-        //             'birthdate' => fake()->date('Y-m-d', '-18 years'),
-        //             'email' => "student{$i}@example.com",
-        //             'password' => bcrypt('password'),
-        //             'role_id' => Role::where('name', 'student')->first()->id,
-        //         ]);
-        //     }
-        // }
+        // Create 10 additional students
+        for ($i = 1; $i <= 10; $i++) {
+            if (!User::where('email', "student{$i}@example.com")->exists()) {
+                User::factory()->create([
+                    'firstname' => "Student{$i}",
+                    'infix' => '',
+                    'lastname' => 'Test',
+                    'username' => "student{$i}",
+                    'birthdate' => fake()->date('Y-m-d', '-18 years'),
+                    'email' => "student{$i}@example.com",
+                    'password' => bcrypt('password'),
+                    'role_id' => Role::where('name', 'student')->first()->id,
+                ]);
+            }
+        }
     }
 }
