@@ -5,6 +5,10 @@ use App\Http\Controllers\Carscontroler;
 use App\Http\Controllers\Userscontroler;
 use App\Http\Controllers\Orderscontroler;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LessonsController;
+use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -103,4 +107,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/Reports/{id}', 'App\Http\Controllers\ReportsController@update')->name('Reports.update');
     Route::delete('/Reports/{id}', 'App\Http\Controllers\ReportsController@destroy')->name('Reports.destroy');
 });
+
+// Student routes
+
+    Route::get('/student/dashboard', [StudentDashboardController::class, 'studentDashboard'])->name('student.dashboard');
+    Route::get('/student/lessons', [LessonsController::class, 'studentLessons'])->name('student.lessons');
+    Route::get('/student/lessons/{id}', [LessonsController::class, 'studentShowLesson'])->name('student.lessons.show');
+    Route::get('/student/lessons/{id}/feedback', [LessonsController::class, 'studentFeedbackForm'])->name('student.lessons.feedback');
+    Route::post('/student/lessons/{id}/feedback', [LessonsController::class, 'studentStoreFeedback'])->name('student.lessons.saveFeedback');
+
+
+
 require __DIR__.'/auth.php';
