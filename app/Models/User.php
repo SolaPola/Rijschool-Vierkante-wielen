@@ -73,26 +73,32 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is a student.
+     * Check if user is an administrator
+     * 
+     * @return bool
      */
-    public function isStudent(): bool
+    public function isAdmin()
     {
-        return $this->hasRole('student');
+        return $this->role_id && $this->role->name === 'administrator';
     }
 
     /**
-     * Check if the user is an instructor.
+     * Check if user is an instructor
+     * 
+     * @return bool
      */
-    public function isInstructor(): bool
+    public function isInstructor()
     {
-        return $this->hasRole('instructor');
+        return $this->role_id && $this->role->name === 'instructor';
     }
 
     /**
-     * Check if the user is an administrator.
+     * Check if user is a student
+     * 
+     * @return bool
      */
-    public function isAdmin(): bool
+    public function isStudent()
     {
-        return $this->hasRole('administrator');
+        return $this->role_id && $this->role->name === 'student';
     }
 }

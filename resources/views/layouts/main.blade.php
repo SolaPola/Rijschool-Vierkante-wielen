@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>@yield('title', 'Rijschool Vierkante Wielen')</title>
+    <!-- Include Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         .bg-navy-50 { background-color: #f0f4f8; }
@@ -31,15 +25,19 @@
         .hover\:text-navy-800:hover { color: #1e3570; }
         .focus\:ring-offset-2:focus { --tw-ring-offset-width: 2px; }
     </style>
+    @yield('styles')
 </head>
-<body class="font-sans antialiased bg-gray-50">
+<body class="bg-gray-50">
     <!-- Top Navigation Bar -->
     <div class="bg-navy-700 text-white shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-xl font-bold">Rijschool Vierkante Wielen</h1>
             @auth
                 <div class="flex items-center space-x-4">
-                    <span class="text-white">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</span>
+                    <span class="text-sm text-white">Welcome, {{ Auth::user()->firstname }}</span>
+                    <a href="{{ route('settings.profile') }}" class="bg-yellow-500 hover:bg-yellow-400 text-navy-800 px-4 py-2 rounded-lg font-medium">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="text-white hover:text-yellow-300">
@@ -58,7 +56,7 @@
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-        <!-- Role-based Sidebar -->
+        <!-- Role-specific Sidebar -->
         @auth
             @if(auth()->user()->isAdmin())
                 @include('components.admin-sidebar')
@@ -72,8 +70,9 @@
         <!-- Main Content Area -->
         <div class="flex-1">
             @yield('content')
-            {{ $slot ?? '' }}
         </div>
     </div>
+
+    @yield('scripts')
 </body>
 </html>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class HomeController extends Controller
 {
     /**
@@ -17,15 +16,7 @@ class HomeController extends Controller
     {
         // If user is logged in, redirect to the appropriate dashboard
         if (Auth::check()) {
-            $user = Auth::user();
-
-            if ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->isInstructor()) {
-                return redirect()->route('instructors.dashboard');
-            } elseif ($user->isStudent()) {
-                return redirect()->route('student.dashboard');
-            }
+            return $this->redirectBasedOnRole(Auth::user());
         }
 
         // Otherwise show the welcome page
@@ -39,12 +30,21 @@ class HomeController extends Controller
      */
     public function dashboard()
     {
-        $user = Auth::user();
-
+        return $this->redirectBasedOnRole(Auth::user());
+    }
+    
+    /**
+     * Helper method to redirect based on user role
+     * 
+     * @param \App\Models\User $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function redirectBasedOnRole($user)
+    {
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->isInstructor()) {
-            return redirect()->route('instructor.dashboard');
+            return redirect()->route('instructors.dashboard');
         } elseif ($user->isStudent()) {
             return redirect()->route('student.dashboard');
         }
