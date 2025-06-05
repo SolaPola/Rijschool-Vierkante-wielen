@@ -7,10 +7,10 @@
         <a href="{{ route('instructors.students') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('instructors.students') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
             <i class="fas fa-user-graduate mr-3"></i>My Students
         </a>
-        <a href="{{ route('Lessons.instructors') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('Lessons.instructors') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
+        <a href="{{ url('/Lessons/instructors') }}" class="block px-4 py-3 rounded-lg {{ request()->is('Lessons/instructors') || request()->is('Lessons/instructor') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
             <i class="fas fa-calendar-alt mr-3"></i>My Lessons
         </a>
-        <a href="{{ route('Cars.index') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('Cars.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
+        <a href="{{ route('Instructor.Cars.index') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('Instructor.Cars.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
             <i class="fas fa-car mr-3"></i>Vehicles
         </a>
         <a href="{{ route('settings.profile') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('settings.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">

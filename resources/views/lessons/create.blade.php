@@ -1,163 +1,186 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            {{ __('Create New Driving Lesson') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('Lessons.store') }}">
-                        @csrf
-
-                        <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
-                            <!-- Registration Selection -->
-                            <div>
-                                <x-label for="registration_id" :value="__('Student Registration')" />
-                                <select id="registration_id" name="registration_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                                    <option value="">Select a registration</option>
-                                    @foreach ($registrations as $registration)
-                                        <option value="{{ $registration->id }}" {{ old('registration_id') == $registration->id ? 'selected' : '' }}>
-                                            {{ $registration->student->name }} - Package: {{ $registration->package->name }} ({{ $registration->start_date }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('registration_id')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Instructor Selection -->
-                            <div>
-                                <x-label for="instructor_id" :value="__('Instructor')" />
-                                <select id="instructor_id" name="instructor_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                                    <option value="">Select an instructor</option>
-                                    @foreach ($instructors as $instructor)
-                                        <option value="{{ $instructor->id }}" {{ old('instructor_id') == $instructor->id ? 'selected' : '' }}>
-                                            {{ $instructor->user->name }} ({{ $instructor->number }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('instructor_id')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Car Selection -->
-                            <div>
-                                <x-label for="car_id" :value="__('Car')" />
-                                <select id="car_id" name="car_id" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                                    <option value="">Select a car</option>
-                                    @foreach ($cars as $car)
-                                        <option value="{{ $car->id }}" {{ old('car_id') == $car->id ? 'selected' : '' }}>
-                                            {{ $car->brand }} {{ $car->type }} ({{ $car->license_plate }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('car_id')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Lesson Status -->
-                            <div>
-                                <x-label for="lesson_status" :value="__('Lesson Status')" />
-                                <select id="lesson_status" name="lesson_status" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
-                                    <option value="Planned" {{ old('lesson_status') == 'Planned' ? 'selected' : '' }}>Planned</option>
-                                    <option value="Completed" {{ old('lesson_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                    <option value="Canceled" {{ old('lesson_status') == 'Canceled' ? 'selected' : '' }}>Canceled</option>
-                                </select>
-                                @error('lesson_status')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Start Date -->
-                            <div>
-                                <x-label for="start_date" :value="__('Start Date')" />
-                                <x-input id="start_date" class="block mt-1 w-full" type="date" name="start_date" :value="old('start_date')" required />
-                                @error('start_date')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Start Time -->
-                            <div>
-                                <x-label for="start_time" :value="__('Start Time')" />
-                                <x-input id="start_time" class="block mt-1 w-full" type="time" name="start_time" :value="old('start_time')" required />
-                                @error('start_time')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- End Date -->
-                            <div>
-                                <x-label for="end_date" :value="__('End Date')" />
-                                <x-input id="end_date" class="block mt-1 w-full" type="date" name="end_date" :value="old('end_date')" required />
-                                @error('end_date')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- End Time -->
-                            <div>
-                                <x-label for="end_time" :value="__('End Time')" />
-                                <x-input id="end_time" class="block mt-1 w-full" type="time" name="end_time" :value="old('end_time')" required />
-                                @error('end_time')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Goal -->
-                        <div class="mt-4">
-                            <x-label for="goal" :value="__('Lesson Goal')" />
-                            <textarea id="goal" name="goal" rows="3" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('goal') }}</textarea>
-                            @error('goal')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Student Comment -->
-                        <div class="mt-4">
-                            <x-label for="student_comment" :value="__('Student Comment')" />
-                            <textarea id="student_comment" name="student_comment" rows="3" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('student_comment') }}</textarea>
-                            @error('student_comment')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Instructor Commentary -->
-                        <div class="mt-4">
-                            <x-label for="commentary_instructor" :value="__('Instructor Commentary')" />
-                            <textarea id="commentary_instructor" name="commentary_instructor" rows="3" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('commentary_instructor') }}</textarea>
-                            @error('commentary_instructor')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Remark -->
-                        <div class="mt-4">
-                            <x-label for="remark" :value="__('Remarks')" />
-                            <textarea id="remark" name="remark" rows="3" class="block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('remark') }}</textarea>
-                            @error('remark')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <a href="{{ route('Lessons.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-800 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
-                                Cancel
-                            </a>
-                            <x-button>
-                                {{ __('Create Lesson') }}
-                            </x-button>
-                        </div>
-                    </form>
+    <x-slot name="title">Create New Lesson - Rijschool Vierkante Wielen</x-slot>
+    
+    <!-- Page header -->
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-navy-800">Schedule a New Lesson</h2>
+        <a href="{{ route('Lessons.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md inline-flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Lessons
+        </a>
+    </div>
+    
+    <!-- Alerts -->
+    @if ($errors->any())
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-md">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="font-bold">Please correct the following errors:</p>
+                    <ul class="mt-1 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
         </div>
+    @endif
+    
+    <!-- Lesson Form -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-navy-50">
+            <h3 class="font-medium text-navy-800">Lesson Details</h3>
+        </div>
+        
+        <form action="{{ route('Lessons.store') }}" method="POST" class="p-6">
+            @csrf
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Student Selection -->
+                <div>
+                    <label for="student_id" class="block text-sm font-medium text-gray-700 mb-1">Student</label>
+                    <select id="student_id" name="student_id" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                        <option value="">Select a student</option>
+                        @foreach ($students as $student)
+                            <option value="{{ $student->id }}" {{ old('student_id') == $student->id ? 'selected' : '' }}>
+                                {{ $student->user->firstname }} {{ $student->user->infix }} {{ $student->user->lastname }} 
+                                ({{ $student->relation_number }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Instructor Selection -->
+                <div>
+                    <label for="instructor_id" class="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
+                    <select id="instructor_id" name="instructor_id" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                        <option value="">Select an instructor</option>
+                        @foreach ($instructors as $instructor)
+                            <option value="{{ $instructor->id }}" {{ old('instructor_id') == $instructor->id ? 'selected' : '' }}>
+                                {{ $instructor->user->firstname }} {{ $instructor->user->infix }} {{ $instructor->user->lastname }}
+                                @if(isset($instructor->number))
+                                ({{ $instructor->number }})
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Vehicle Selection -->
+                <div>
+                    <label for="car_id" class="block text-sm font-medium text-gray-700 mb-1">Vehicle</label>
+                    <select id="car_id" name="car_id" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                        <option value="">Select a vehicle</option>
+                        @foreach ($cars as $car)
+                            <option value="{{ $car->id }}" {{ old('car_id') == $car->id ? 'selected' : '' }}>
+                                {{ $car->brand }} {{ $car->type }} ({{ $car->license_plate }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Status Selection -->
+                <div>
+                    <label for="lesson_status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select id="lesson_status" name="lesson_status" required
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                        <option value="Planned" {{ old('lesson_status') == 'Planned' ? 'selected' : '' }}>Planned</option>
+                        <option value="Completed" {{ old('lesson_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="Canceled" {{ old('lesson_status') == 'Canceled' ? 'selected' : '' }}>Canceled</option>
+                    </select>
+                </div>
+                
+                <!-- Start Date -->
+                <div>
+                    <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date') ?? date('Y-m-d') }}" required
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                </div>
+                
+                <!-- Start Time -->
+                <div>
+                    <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                    <input type="time" id="start_time" name="start_time" value="{{ old('start_time') ?? '09:00' }}" required
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                </div>
+                
+                <!-- End Date -->
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <input type="date" id="end_date" name="end_date" value="{{ old('end_date') ?? date('Y-m-d') }}" required
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                </div>
+                
+                <!-- End Time -->
+                <div>
+                    <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                    <input type="time" id="end_time" name="end_time" value="{{ old('end_time') ?? '09:45' }}" required
+                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
+                </div>
+            </div>
+            
+            <!-- Goal -->
+            <div class="mt-6">
+                <label for="goal" class="block text-sm font-medium text-gray-700 mb-1">Lesson Goal</label>
+                <input type="text" id="goal" name="goal" value="{{ old('goal') }}"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5"
+                       placeholder="E.g. Highway driving practice">
+            </div>
+            
+            <!-- Remark -->
+            <div class="mt-6">
+                <label for="remark" class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                <textarea id="remark" name="remark" rows="3"
+                          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5"
+                          placeholder="Any additional notes or remarks">{{ old('remark') }}</textarea>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="mt-8 flex justify-end space-x-3">
+                <a href="{{ route('Lessons.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-navy-600 hover:bg-navy-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+                    <i class="fas fa-save mr-2"></i> Schedule Lesson
+                </button>
+            </div>
+        </form>
     </div>
+    
+    <x-slot name="scripts">
+        <script>
+            // Auto-populate end date when start date changes
+            document.getElementById('start_date').addEventListener('change', function() {
+                document.getElementById('end_date').value = this.value;
+            });
+            
+            // Auto-calculate end time (45 minutes later) when start time changes
+            document.getElementById('start_time').addEventListener('change', function() {
+                const startTime = this.value;
+                const [hours, minutes] = startTime.split(':').map(Number);
+                
+                let endMinutes = minutes + 45;
+                let endHours = hours;
+                
+                if (endMinutes >= 60) {
+                    endMinutes -= 60;
+                    endHours += 1;
+                }
+                
+                if (endHours >= 24) {
+                    endHours -= 24;
+                }
+                
+                const formattedEndHours = String(endHours).padStart(2, '0');
+                const formattedEndMinutes = String(endMinutes).padStart(2, '0');
+                
+                document.getElementById('end_time').value = `${formattedEndHours}:${formattedEndMinutes}`;
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

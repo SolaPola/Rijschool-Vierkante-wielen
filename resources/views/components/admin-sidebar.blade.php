@@ -13,6 +13,9 @@
         <a href="{{ route('instructors.index') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('instructors.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
             <i class="fas fa-chalkboard-teacher mr-3"></i>Instructors
         </a>
+        <a href="{{ route('students.index') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('students.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
+            <i class="fas fa-user-graduate mr-3"></i>Students
+        </a>
         <a href="{{ route('Admin.Cars.index') }}" class="block px-4 py-3 rounded-lg {{ request()->routeIs('Admin.Cars.*') ? 'bg-navy-600 text-white font-medium' : 'text-gray-700 hover:bg-navy-50 hover:text-navy-700' }}">
             <i class="fas fa-car mr-3"></i>Vehicles
         </a>

@@ -24,17 +24,15 @@ class Lesson extends Model
      * @var array
      */
     protected $fillable = [
-        'registration_id',
         'instructor_id',
-        'car_id',
-        'start_datetime',
-        'end_datetime',
-        'lesson_status',
-        'goal',
-        'student_comment',
-        'commentary_instructor',
-        'remark',
-        'isactive'          // 0 = inactive, 1 = active
+        'student_id',
+        'title',
+        'description',
+        'start_time',
+        'end_time',
+        'status',
+        'notes',
+        'vehicle_id', // This is the correct column name instead of car_id
     ];
 
     /**
@@ -43,17 +41,9 @@ class Lesson extends Model
      * @var array
      */
     protected $casts = [
-        'start_datetime' => 'datetime',
-        'end_datetime' => 'datetime',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
-
-    /**
-     * Get the registration associated with the lesson.
-     */
-    public function registration()
-    {
-        return $this->belongsTo(Registration::class, 'registration_id');
-    }
 
     /**
      * Get the instructor associated with the lesson.
@@ -68,6 +58,14 @@ class Lesson extends Model
      */
     public function car()
     {
-        return $this->belongsTo(Car::class, 'car_id');
+        return $this->belongsTo(Car::class, 'vehicle_id'); // Using vehicle_id as foreign key
+    }
+    
+    /**
+     * Get the student associated with the lesson.
+     */
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
     }
 }

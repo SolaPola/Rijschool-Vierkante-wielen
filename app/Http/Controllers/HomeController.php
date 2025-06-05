@@ -15,9 +15,9 @@ class HomeController extends Controller
     public function index()
     {
         // If user is logged in, redirect to the appropriate dashboard
-        if (Auth::check()) {
-            return $this->redirectBasedOnRole(Auth::user());
-        }
+        // if (Auth::check()) {
+        //     return $this->redirectBasedOnRole(Auth::user());
+        // }
 
         // Otherwise show the welcome page
         return view('welcome');

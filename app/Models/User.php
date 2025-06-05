@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
+
 
 class User extends Authenticatable
 {
@@ -73,32 +75,48 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is an administrator
+     * Determine if user is an administrator
      * 
      * @return bool
      */
     public function isAdmin()
     {
-        return $this->role_id && $this->role->name === 'administrator';
+        return $this->role && $this->role->name === 'administrator';
     }
 
     /**
-     * Check if user is an instructor
+     * Determine if user is an instructor
      * 
      * @return bool
      */
     public function isInstructor()
     {
-        return $this->role_id && $this->role->name === 'instructor';
+        return $this->role && $this->role->name === 'instructor';
     }
 
     /**
-     * Check if user is a student
+     * Determine if user is a student
      * 
      * @return bool
      */
     public function isStudent()
     {
-        return $this->role_id && $this->role->name === 'student';
+        return $this->role && $this->role->name === 'student';
+    }
+
+    /**
+     * Get the instructor profile associated with the user.
+     */
+    public function instructor()
+    {
+        return $this->hasOne(Instructor::class);
+    }
+
+    /**
+     * Get the student profile associated with the user.
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 }

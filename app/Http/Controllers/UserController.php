@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -13,10 +14,56 @@ class UserController extends Controller
     /**
      * Display a listing of the users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('role')->get();
-        return view('accounts.index', compact('users'));
+        // If a role filter is applied, filter users by role
+        if ($request->has('role')) {
+            $roleName = $request->get('role');
+            $role = Role::where('name', $roleName)->first();
+            
+            if ($role) {
+                $users = User::with('role')
+                    ->where('role_id', $role->id);
+                    
+                // Add search filtering for instructors
+                if ($roleName === 'instructor' && $request->has('search') && $request->search) {
+                    $search = $request->search;
+                    $users = $users->where(function($query) use ($search) {
+                        $query->where('firstname', 'like', "%{$search}%")
+                              ->orWhere('lastname', 'like', "%{$search}%")
+                              ->orWhere('email', 'like', "%{$search}%");
+                    });
+                }
+                
+                $users = $users->paginate(15);
+            } else {
+                // If role doesn't exist, show all users
+                $users = User::with('role')->paginate(15);
+            }
+        } else {
+            // No filter, show all users
+            $users = User::with('role')->paginate(15);
+        }
+        
+        // Get counts for the role filters
+        $totalUsers = User::count();
+        $adminCount = User::whereHas('role', function($query) {
+            $query->where('name', 'administrator');
+        })->count();
+        $instructorCount = User::whereHas('role', function($query) {
+            $query->where('name', 'instructor');
+        })->count();
+        $studentCount = User::whereHas('role', function($query) {
+            $query->where('name', 'student');
+        })->count();
+        
+        return view('accounts.index', compact(
+            'users', 
+            'totalUsers', 
+            'adminCount', 
+            'instructorCount', 
+            'studentCount'
+        ));
     }
 
     /**
@@ -113,5 +160,56 @@ class UserController extends Controller
 
         return redirect()->route('accounts.index')
             ->with('success', 'User deleted successfully');
+    }
+
+    /**
+     * Display a listing of the students.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function students()
+    {
+        try {
+            $studentRole = Role::where('name', 'student')->first();
+            
+            if (!$studentRole) {
+                return redirect()->route('admin.dashboard')
+                    ->with('error', 'Student role not defined in the system');
+            }
+            
+            $students = Student::with('user')
+                ->whereHas('user', function($query) use ($studentRole) {
+                    $query->where('role_id', $studentRole->id);
+                })
+                ->paginate(15);
+                
+            return view('students.index', compact('students'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Error retrieving students: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mark a student as inactive (soft delete).
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteStudent($id)
+    {
+        try {
+            $student = Student::findOrFail($id);
+            
+            // Mark as inactive instead of deleting
+            $student->isactive = false;
+            $student->save();
+            
+            return redirect()->route('students.index')
+                ->with('success', 'Student deactivated successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('students.index')
+                ->with('error', 'Error deactivating student: ' . $e->getMessage());
+        }
     }
 }

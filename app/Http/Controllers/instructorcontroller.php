@@ -3,6 +3,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Instructor;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -12,71 +15,85 @@ class InstructorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            // First we need to create the GetInstructors stored procedure if it doesn't exist
-            DB::unprepared("
-            CREATE PROCEDURE IF NOT EXISTS GetInstructors()
-            BEGIN
-                SELECT 
-                    i.id,
-                    i.number AS license_number,
-                    i.isactive,
-                    i.remark,
-                    CONCAT(u.firstname, ' ', IF(u.infix IS NOT NULL AND u.infix != '', CONCAT(u.infix, ' '), ''), u.lastname) AS name,
-                    u.email,
-                    u.username,
-                    u.birthdate,
-                    u.is_active AS user_status,
-                    u.created_at,
-                    u.updated_at,
-                    CASE 
-                        WHEN i.isactive = 1 AND u.is_active = 1 THEN 'Active'
-                        WHEN i.isactive = 0 THEN 'Inactive'
-                        ELSE 'On Leave'
-                    END AS status
-                FROM instructors i
-                INNER JOIN users u ON i.user_id = u.id;
-            END;
-            ");
+            // First try to use Eloquent with relationships
+            try {
+                $query = Instructor::with('user');
+                
+                // Add search filtering if provided
+                if ($request->has('search') && $request->search) {
+                    $search = $request->search;
+                    $query->where(function($q) use ($search) {
+                        // Search in instructor number
+                        $q->where('number', 'like', "%{$search}%")
+                          // Or search in user details
+                          ->orWhereHas('user', function($q) use ($search) {
+                            $q->where('firstname', 'like', "%{$search}%")
+                              ->orWhere('lastname', 'like', "%{$search}%")
+                              ->orWhere('email', 'like', "%{$search}%");
+                        });
+                    });
+                }
+                
+                // Filter by active status if provided
+                if ($request->has('status') && $request->status != 'all') {
+                    $isActive = $request->status === 'active';
+                    $query->where('isactive', $isActive);
+                }
+                
+                $instructors = $query->paginate(15);
+            } catch (\Exception $eloquentException) {
+                // If Eloquent fails, fallback to raw query that includes user data
+                $baseQuery = DB::table('instructors')
+                    ->join('users', 'instructors.user_id', '=', 'users.id')
+                    ->select(
+                        'instructors.id', 
+                        'instructors.number', 
+                        'instructors.isactive',
+                        'instructors.user_id',
+                        'users.firstname as user_firstname',
+                        'users.infix as user_infix',
+                        'users.lastname as user_lastname',
+                        'users.email as user_email'
+                    );
+                
+                // Add search filtering if provided
+                if ($request->has('search') && $request->search) {
+                    $search = $request->search;
+                    $baseQuery->where(function($q) use ($search) {
+                        // Search in instructor number
+                        $q->where('instructors.number', 'like', "%{$search}%")
+                          // Or search in user details
+                          ->orWhere('users.firstname', 'like', "%{$search}%")
+                          ->orWhere('users.lastname', 'like', "%{$search}%")
+                          ->orWhere('users.email', 'like', "%{$search}%");
+                    });
+                }
+                
+                // Filter by active status if provided
+                if ($request->has('status') && $request->status != 'all') {
+                    $isActive = $request->status === 'active';
+                    $baseQuery->where('instructors.isactive', $isActive);
+                }
+                
+                $instructors = $baseQuery->paginate(15);
+            }
             
-            // Call the stored procedure to get all instructors
-            $instructorsData = DB::select('CALL GetInstructors()');
-            
-            // Convert to collection for easier manipulation
-            $instructorsCollection = collect($instructorsData);
-            
-            // Calculate statistics for dashboard cards
-            $totalInstructors = $instructorsCollection->count();
-            $certifiedInstructors = $instructorsCollection->where('isactive', 1)->count();
-            $activeInstructors = $instructorsCollection->where('status', 'Active')->count();
-            
-            // Manual pagination since stored procedures can't be paginated directly
-            $page = request()->get('page', 1);
-            $perPage = 10;
-            
-            $offset = ($page - 1) * $perPage;
-            $instructorsForCurrentPage = $instructorsCollection->slice($offset, $perPage);
-            
-            // Create a custom paginator
-            $instructors = new LengthAwarePaginator(
-                $instructorsForCurrentPage,
-                $instructorsCollection->count(),
-                $perPage,
-                $page,
-                ['path' => request()->url()]
-            );
+            // Get instructor counts for filter stats
+            $totalInstructors = Instructor::count();
+            $activeInstructors = Instructor::where('isactive', true)->count();
+            $inactiveInstructors = Instructor::where('isactive', false)->count();
             
             return view('instructors.index', compact(
-                'instructors', 
-                'totalInstructors', 
-                'certifiedInstructors', 
-                'activeInstructors'
+                'instructors',
+                'totalInstructors',
+                'activeInstructors',
+                'inactiveInstructors'
             ));
         } catch (\Exception $e) {
-            return back()->with('error', 'Error retrieving instructors: ' . $e->getMessage());
-            dd($e->getMessage());
+            return redirect()->route('admin.dashboard')->with('error', 'Error retrieving instructors: ' . $e->getMessage());
         }
     }
     
@@ -85,7 +102,7 @@ class InstructorController extends Controller
      */
     public function create()
     {
-        return view('instructors.create');
+        return redirect()->route('accounts.create', ['role' => 'instructor']);
     }
     
     /**
@@ -144,10 +161,20 @@ class InstructorController extends Controller
      */
     public function destroy($id)
     {
-          DB::statement('CALL DeleteDrivingLesson(?)', [$id]);
-        
-        return redirect()->route('Lessons.index')
-            ->with('success', 'Driving lesson deleted successfully');
+        try {
+            $instructor = Instructor::findOrFail($id);
+            $user = User::findOrFail($instructor->user_id);
+            
+            // Mark as inactive instead of deleting to maintain referential integrity
+            $instructor->isactive = false;
+            $instructor->save();
+            
+            return redirect()->route('instructors.index')
+                ->with('success', 'Instructor deactivated successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('instructors.index')
+                ->with('error', 'Error deactivating instructor: ' . $e->getMessage());
+        }
     }
 
 }

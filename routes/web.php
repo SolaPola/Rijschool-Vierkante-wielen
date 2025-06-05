@@ -21,6 +21,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonsController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -58,6 +59,7 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
 Route::middleware([InstructorMiddleware::class])->prefix('instructors')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructors.dashboard');
     Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructors.students');
+    Route::get('/lessons', [LessonsController::class, 'instructorLessons'])->name('instructors.lessons');
 });
 
 // Admin specific routes
@@ -73,32 +75,50 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
     Route::put('/accounts/{user}', [UserController::class, 'update'])->name('accounts.update');
     Route::delete('/accounts/{user}', [UserController::class, 'destroy'])->name('accounts.destroy');
     
-    
+    // Instructor management routes
     Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
     Route::get('/instructors/{instructors}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
+    
+    // Student management routes
+    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/students/{student}/delete', [StudentController::class, 'delete'])->name('students.delete');
 });
 
 require __DIR__ . '/auth.php';
 
 Route::middleware([InstructorMiddleware::class])->group(function () {
-
-    Route::get('/Cars', 'App\Http\Controllers\Carscontroler@index')->name('Cars.index');
-    Route::post('/Cars', 'App\Http\Controllers\Carscontroler@store')->name('Cars.store');
-    Route::get('/Cars/create', 'App\Http\Controllers\Carscontroler@create')->name('Cars.create');
+    // Replace the original route with the instructor-specific one
+    Route::get('/Cars', 'App\Http\Controllers\Carscontroler@instructorIndex')->name('Cars.index');
+    
+    // Keep the other routes the same since instructors should only view cars, not modify them
     Route::get('/Cars/{id}', 'App\Http\Controllers\Carscontroler@show')->name('Cars.show');
-    Route::get('/Cars/{id}/edit', 'App\Http\Controllers\Carscontroler@edit')->name('Cars.edit');
-    Route::put('/Cars/{id}', 'App\Http\Controllers\Carscontroler@update')->name('Cars.update');
-    Route::delete('/Cars/{id}', 'App\Http\Controllers\Carscontroler@destroy')->name('Cars.destroy');
 });
-Route::middleware([AdminMiddleware::class])->group(function () {
 
-    Route::get('/Admin/Cars', 'App\Http\Controllers\Carscontroler@index')->name('Admin.Cars.index');
-    Route::post('/Admin/Cars', 'App\Http\Controllers\Carscontroler@store')->name('Admin.Cars.store');
-    Route::get('/Admin/Cars/create', 'App\Http\Controllers\Carscontroler@create')->name('Admin.Cars.create');
-    Route::get('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@show')->name('Admin.Cars.show');
-    Route::get('/Admin/Cars/{id}/edit', 'App\Http\Controllers\Carscontroler@edit')->name('Admin.Cars.edit');
-    Route::put('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@update')->name('Admin.Cars.update');
-    Route::delete('/Admin/Cars/{id}', 'App\Http\Controllers\Carscontroler@destroy')->name('Admin.Cars.destroy');
+Route::middleware([AdminMiddleware::class])->group(function () {
+    // Admin Car routes - properly named with modern controller syntax
+    Route::get('/Admin/Cars', [Carscontroler::class, 'index'])->name('Admin.Cars.index');
+    Route::post('/Admin/Cars', [Carscontroler::class, 'store'])->name('Admin.Cars.store');
+    Route::get('/Admin/Cars/create', [Carscontroler::class, 'create'])->name('Admin.Cars.create');
+    Route::get('/Admin/Cars/{id}', [Carscontroler::class, 'show'])->name('Admin.Cars.show');
+    Route::get('/Admin/Cars/{id}/edit', [Carscontroler::class, 'edit'])->name('Admin.Cars.edit');
+    Route::put('/Admin/Cars/{id}', [Carscontroler::class, 'update'])->name('Admin.Cars.update');
+    Route::delete('/Admin/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Admin.Cars.destroy');
+    
+    // Regular Car routes for admin use as well
+    Route::get('/Cars', [Carscontroler::class, 'index'])->name('Cars.index');
+    Route::post('/Cars', [Carscontroler::class, 'store'])->name('Cars.store');
+    Route::get('/Cars/create', [Carscontroler::class, 'create'])->name('Cars.create');
+    Route::get('/Cars/{id}', [Carscontroler::class, 'show'])->name('Cars.show');
+    Route::get('/Cars/{id}/edit', [Carscontroler::class, 'edit'])->name('Cars.edit');
+    Route::put('/Cars/{id}', [Carscontroler::class, 'update'])->name('Cars.update');
+    Route::delete('/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Cars.destroy');
+});
+
+// Update instructor routes - fix the route naming issue
+Route::middleware([InstructorMiddleware::class])->group(function () {
+    // Instructors can only view cars, not create/edit/delete them
+    Route::get('/instructor/cars', [Carscontroler::class, 'instructorIndex'])->name('Instructor.Cars.index'); 
+    Route::get('/instructor/cars/{id}', [Carscontroler::class, 'show'])->name('Instructor.Cars.show');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -137,19 +157,21 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    // Lessons Routes
-    Route::get('/Lessons', 'App\Http\Controllers\LessonsController@index')->name('Lessons.index');
-    Route::post('/Lessons', 'App\Http\Controllers\LessonsController@store')->name('Lessons.store');
-    Route::get('/Lessons/create', 'App\Http\Controllers\LessonsController@create')->name('Lessons.create');
-    Route::get('/Lessons/{id}', 'App\Http\Controllers\LessonsController@show')->name('Lessons.show');
-    Route::get('/Lessons/{id}/edit', 'App\Http\Controllers\LessonsController@edit')->name('Lessons.edit');
-    Route::put('/Lessons/{id}', 'App\Http\Controllers\LessonsController@update')->name('Lessons.update');
-    Route::delete('/Lessons/{id}', 'App\Http\Controllers\LessonsController@destroy')->name('Lessons.destroy');
+    // Lessons Routes - Special routes first with correctly named methods
+    Route::get('/Lessons/instructors', [LessonsController::class, 'instructorLessons'])->name('Lessons.instructors');
+    Route::get('/Lessons/instructor', [LessonsController::class, 'instructorLessons'])->name('Lessons.instructor');
     
-    // Additional Lessons Routes
-    Route::get('/Lessons/student/{studentId}', 'App\Http\Controllers\LessonsController@getStudentLessons')->name('Lessons.student');
-    Route::get('/Lessons/instructors', 'App\Http\Controllers\LessonsController@getInstructorLessons')->name('Lessons.instructors');
-    Route::get('/Lessons/car', 'App\Http\Controllers\LessonsController@getCarLessons')->name('Lessons.car');
+    Route::get('/Lessons/student/{studentId}', [LessonsController::class, 'getStudentLessons'])->name('Lessons.student');
+    Route::get('/Lessons/car', [LessonsController::class, 'getCarLessons'])->name('Lessons.car');
+    
+    // Standard CRUD routes for lessons
+    Route::get('/Lessons', [LessonsController::class, 'index'])->name('Lessons.index');
+    Route::post('/Lessons', [LessonsController::class, 'store'])->name('Lessons.store');
+    Route::get('/Lessons/create', [LessonsController::class, 'create'])->name('Lessons.create');
+    Route::get('/Lessons/{id}', [LessonsController::class, 'show'])->name('Lessons.show');
+    Route::get('/Lessons/{id}/edit', [LessonsController::class, 'edit'])->name('Lessons.edit');
+    Route::put('/Lessons/{id}', [LessonsController::class, 'update'])->name('Lessons.update');
+    Route::delete('/Lessons/{id}', [LessonsController::class, 'destroy'])->name('Lessons.destroy');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -165,7 +187,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Student routes
 
-    Route::get('/student/dashboard', [StudentDashboardController::class, 'studentDashboard'])->name('student.dashboard');
+    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
     Route::get('/student/lessons', [LessonsController::class, 'studentLessons'])->name('student.lessons');
     Route::get('/student/lessons/{id}', [LessonsController::class, 'studentShowLesson'])->name('student.lessons.show');
     Route::get('/student/lessons/{id}/feedback', [LessonsController::class, 'studentFeedbackForm'])->name('student.lessons.feedback');
