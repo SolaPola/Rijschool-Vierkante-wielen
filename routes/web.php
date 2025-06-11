@@ -102,16 +102,9 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::get('/Admin/Cars/{id}', [Carscontroler::class, 'show'])->name('Admin.Cars.show');
     Route::get('/Admin/Cars/{id}/edit', [Carscontroler::class, 'edit'])->name('Admin.Cars.edit');
     Route::put('/Admin/Cars/{id}', [Carscontroler::class, 'update'])->name('Admin.Cars.update');
+    Route::put('/Admin/Cars/{id}/maintenance', [Carscontroler::class, 'setMaintenance'])->name('Admin.Cars.maintenance');
     Route::delete('/Admin/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Admin.Cars.destroy');
     
-    // Regular Car routes for admin use as well
-    Route::get('/Cars', [Carscontroler::class, 'index'])->name('Cars.index');
-    Route::post('/Cars', [Carscontroler::class, 'store'])->name('Cars.store');
-    Route::get('/Cars/create', [Carscontroler::class, 'create'])->name('Cars.create');
-    Route::get('/Cars/{id}', [Carscontroler::class, 'show'])->name('Cars.show');
-    Route::get('/Cars/{id}/edit', [Carscontroler::class, 'edit'])->name('Cars.edit');
-    Route::put('/Cars/{id}', [Carscontroler::class, 'update'])->name('Cars.update');
-    Route::delete('/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Cars.destroy');
 });
 
 // Update instructor routes - fix the route naming issue

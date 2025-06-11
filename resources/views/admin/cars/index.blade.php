@@ -6,7 +6,7 @@
     <!-- Page header -->
     <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold text-navy-800">Cars Management</h2>
-        <a href="{{ route('Cars.create') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-navy-800 uppercase tracking-widest hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all">
+        <a href="{{ route('Admin.Cars.create') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-navy-800 uppercase tracking-widest hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all">
             <i class="fas fa-plus mr-2"></i>Add New Car
         </a>
     </div>
@@ -215,9 +215,19 @@
                                 {{ ucfirst($car->fuel) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $car->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ ucfirst($car->status) }}
+                                @if($car->isactive)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                        Available
                                 </span>
+                                @elseif($car->isInMaintenance())
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800" title="{{ $car->maintenance_reason }}">
+                                        Maintenance until {{ $car->maintenance_until->format('d/m/Y') }}
+                                </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                        Unavailable
+                                </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                                 <a href="{{ route('Admin.Cars.edit', $car) }}" class="text-yellow-600 hover:text-yellow-800">

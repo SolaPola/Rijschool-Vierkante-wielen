@@ -60,22 +60,6 @@ class Carscontroler extends Controller
         return view('admin.cars.index', compact('cars', 'brands', 'fuelTypes'));
     }
 
-    public function store(Request $request)
-    {   
-        
-        $data = $request->validate([
-            'brand' => 'required|VARCHAR|max:100',
-            'Type' => 'required|VARCHAR|max:100',
-            'license_plate' => 'required|VARCHAR|max:100',
-            'fuel' => 'required|enum:electric, petrol|max:100',
-        ]);
-        
-
-        // Process the data (e.g., save to database, etc.)
-
-        return redirect()->back()->with('success', 'Data submitted successfully!', $data);
-    }
-
     /**
      * Show the form for creating a new car.
      *
@@ -83,12 +67,88 @@ class Carscontroler extends Controller
      */
     public function create()
     {
-        if (Auth::user()->role->name !== 'administrator') {
-            return redirect()->route('dashboard')
-                ->with('error', 'You do not have permission to create cars');
+        // No need to check if the user is admin here as the middleware handles that
+        return view('admin.cars.create');
+    }
+
+    /**
+     * Store a newly created car in database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {   
+        try {
+            // Check if a car with this license plate already exists
+            $existingCar = Car::where('license_plate', $request->license_plate)->first();
+            if ($existingCar) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['license_plate' => 'A car with this license plate already exists in the system.']);
+            }
+
+            // Validate the incoming request with proper Laravel validation rules
+            $validated = $request->validate([
+                'brand' => 'required|string|max:100',
+                'type' => 'required|string|max:100',
+                'license_plate' => 'required|string|max:20|unique:cars',
+                'fuel' => 'required|in:petrol,diesel,electric,hybrid',
+                'remark' => 'nullable|string|max:500',
+            ]);
+
+            // Make sure fuel is a valid enum value
+            if (!in_array($validated['fuel'], ['petrol', 'diesel', 'electric', 'hybrid'])) {
+                $validated['fuel'] = 'petrol'; // Default to petrol if invalid
+            }
+
+            // Set isactive based on checkbox presence
+            $validated['isactive'] = $request->has('isactive') ? 1 : 0;
+            
+            // Create the car using direct SQL to avoid any potential ORM issues
+            $car = new Car();
+            $car->brand = $validated['brand'];
+            $car->type = $validated['type'];
+            $car->license_plate = $validated['license_plate'];
+            $car->fuel = $validated['fuel'];
+            $car->remark = $validated['remark'];
+            $car->isactive = $validated['isactive'];
+            
+            $car->save();
+
+            // Debug output to see what's happening
+            \Illuminate\Support\Facades\Log::info('Car created successfully', [
+                'car_id' => $car->id,
+                'brand' => $car->brand,
+                'license_plate' => $car->license_plate,
+            ]);
+
+            // Redirect with success message
+            return redirect()->route('Admin.Cars.index')
+                ->with('success', 'Car created successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors - check specifically for license plate uniqueness
+            $errors = $e->validator->errors();
+            
+            if ($errors->has('license_plate') && 
+                str_contains($errors->first('license_plate'), 'taken')) {
+                // Override with a more user-friendly message
+                $errors->add('license_plate', 'A car with this license plate already exists in the system.');
+            }
+            
+            return redirect()->back()
+                ->withErrors($errors)
+                ->withInput();
+        } catch (\Exception $e) {
+            // Log the error details including the SQL error
+            \Illuminate\Support\Facades\Log::error('Error creating car: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            // Redirect back with error and preserve input
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An error occurred while adding the car. Please try again later.');
         }
-        
-        return view('cars.create');
     }
 
     /**
@@ -120,41 +180,134 @@ class Carscontroler extends Controller
             $query->where('fuel', $request->fuel);
         }
         
+        // Check if there are any active cars before pagination
+        $activeCarsExist = $query->count() > 0;
+        
         // Get cars with pagination
         $cars = $query->paginate(10);
         
-        // Get data for filters
+        // Get data for filters - even when no cars, we need these for the filter dropdowns
         $brands = Car::where('isactive', true)->select('brand')->distinct()->pluck('brand');
         $fuelTypes = Car::where('isactive', true)->select('fuel')->distinct()->pluck('fuel');
         
-        return view('cars.instructor-index', compact('cars', 'brands', 'fuelTypes'));
+        // Add a flag to indicate if there are no active cars
+        $noActiveCars = !$activeCarsExist;
+        
+        return view('cars.instructor-index', compact('cars', 'brands', 'fuelTypes', 'noActiveCars'));
     }
-    // public function show($id)
-    // {
-    //     // Logic to retrieve and display a specific record
-    //     return view('show', compact('id'));
-    // }
-    // public function edit($id)
-    // {
-    //     // Logic to retrieve and display a specific record for editing
-    //     return view('edit', compact('id'));
-    // }
-    // public function update(Request $request, $id)
-    // {
-    //     $data = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|max:255',
-    //         'message' => 'required|string|max:1000',
-    //     ]);
+    /**
+     * Display the specified car.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            
+            // Get usage statistics
+            $upcomingLessonsCount = 0;
+            $pastLessonsCount = 0;
+            
+            // Try to get lesson counts if possible
+            if (class_exists('App\Models\Lesson')) {
+                $upcomingLessonsCount = \App\Models\Lesson::where('vehicle_id', $id)
+                    ->where('start_time', '>', now())
+                    ->count();
+                    
+                $pastLessonsCount = \App\Models\Lesson::where('vehicle_id', $id)
+                    ->where('start_time', '<', now())
+                    ->count();
+            }
 
-    //     // Logic to update the record in the database
+            // Determine the view based on the user's role
+            if (Auth::check() && Auth::user()->isAdmin()) {
+                return view('admin.cars.show', compact('car', 'upcomingLessonsCount', 'pastLessonsCount'));
+            } else {
+                return view('cars.show', compact('car', 'upcomingLessonsCount', 'pastLessonsCount'));
+            }
+            
+        } catch (\Exception $e) {
+            $redirectRoute = Auth::check() && Auth::user()->isAdmin() ? 'Admin.Cars.index' : 'Instructor.Cars.index';
+            return redirect()->route($redirectRoute)
+                ->with('error', 'Error retrieving car details: ' . $e->getMessage());
+        }
+    }
+    public function edit($id)
+    {
+        // Logic to retrieve and display a specific record for editing
+        return view('edit', compact('id'));
+    }
+    /**
+     * Update the specified car in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            
+            // Validate the incoming request
+            $validated = $request->validate([
+                'brand' => 'required|string|max:100',
+                'type' => 'required|string|max:100',
+                'license_plate' => 'required|string|max:20|unique:cars,license_plate,' . $id,
+                'fuel' => 'required|in:electric,petrol,diesel,hybrid',
+                'remark' => 'nullable|string|max:500',
+                'maintenance_reason' => 'nullable|string|max:255',
+                'maintenance_until' => 'nullable|date',
+            ]);
 
-    //     return redirect()->route('autocontroler.show', ['id' => $id])->with('success', 'Data updated successfully!');
-    // }
-    // public function destroy($id)
-    // {
-    //     // Logic to delete the record from the database
+            // If car is active, clear maintenance fields
+            if ($request->has('isactive')) {
+                $validated['isactive'] = true;
+                $validated['maintenance_reason'] = null;
+                $validated['maintenance_until'] = null;
+            } else {
+                $validated['isactive'] = false;
+            }
+            
+            // Update the car
+            $car->update($validated);
 
-    //     return redirect()->route('autocontroler.index')->with('success', 'Data deleted successfully!');
-    // }
+            return redirect()->route('Admin.Cars.index')
+                ->with('success', 'Car updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('Admin.Cars.index')
+                ->with('error', 'Error updating car: ' . $e->getMessage());
+        }
+    }
+    /**
+     * Set a car to maintenance mode.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function setMaintenance(Request $request, $id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            
+            $validated = $request->validate([
+                'maintenance_reason' => 'required|string|max:255',
+                'maintenance_until' => 'required|date',
+            ]);
+            
+            $car->isactive = false;
+            $car->maintenance_reason = $validated['maintenance_reason'];
+            $car->maintenance_until = $validated['maintenance_until'];
+            $car->save();
+            
+            return redirect()->route('Admin.Cars.show', $id)
+                ->with('success', 'Car set to maintenance mode successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error setting car to maintenance: ' . $e->getMessage());
+        }
+    }
 }
