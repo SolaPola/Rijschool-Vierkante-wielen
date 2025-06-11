@@ -24,15 +24,15 @@ class Lesson extends Model
      * @var array
      */
     protected $fillable = [
-        'instructor_id',
         'student_id',
-        'title',
-        'description',
+        'instructor_id',
+        'vehicle_id',
         'start_time',
         'end_time',
         'status',
+        'title',
+        'description',
         'notes',
-        'vehicle_id', // This is the correct column name instead of car_id
     ];
 
     /**
@@ -46,26 +46,63 @@ class Lesson extends Model
     ];
 
     /**
-     * Get the instructor associated with the lesson.
+     * Get the student that owns the lesson.
      */
-    public function instructor()
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Instructor::class, 'instructor_id');
+        return $this->belongsTo(Student::class);
     }
 
     /**
-     * Get the car associated with the lesson.
+     * Get the instructor that owns the lesson.
      */
-    public function car()
+    public function instructor(): BelongsTo
     {
-        return $this->belongsTo(Car::class, 'vehicle_id'); // Using vehicle_id as foreign key
+        return $this->belongsTo(Instructor::class);
     }
-    
+
     /**
-     * Get the student associated with the lesson.
+     * Get the car that is used for the lesson.
+     * This relationship uses vehicle_id to link to cars table
      */
-    public function student()
+    public function car(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(Car::class, 'vehicle_id');
+    }
+
+    /**
+     * Check if there are any overlapping lessons with the same car
+     *
+     * @param int $carId
+     * @param string $startTime
+     * @param string $endTime
+     * @param int|null $excludeLessonId Exclude a specific lesson from the check (useful for updates)
+     * @return bool
+     */
+    public static function hasOverlappingCarSchedule($carId, $startTime, $endTime, $excludeLessonId = null)
+    {
+        $query = self::where('vehicle_id', $carId)
+            ->where(function($query) use ($startTime, $endTime) {
+                // Find lessons where:
+                // 1. The lesson starts during our new lesson time
+                // 2. The lesson ends during our new lesson time
+                // 3. The lesson starts before and ends after our new lesson time
+                $query->where(function($q) use ($startTime, $endTime) {
+                    $q->whereBetween('start_time', [$startTime, $endTime]);
+                })->orWhere(function($q) use ($startTime, $endTime) {
+                    $q->whereBetween('end_time', [$startTime, $endTime]);
+                })->orWhere(function($q) use ($startTime, $endTime) {
+                    $q->where('start_time', '<=', $startTime)
+                      ->where('end_time', '>=', $endTime);
+                });
+            })
+            ->where('status', '!=', 'cancelled'); // Ignore cancelled lessons
+            
+        // Exclude the current lesson if we're updating
+        if ($excludeLessonId) {
+            $query->where('id', '!=', $excludeLessonId);
+        }
+        
+        return $query->exists();
     }
 }
