@@ -100,13 +100,18 @@
                           placeholder="Any additional notes or remarks">{{ old('remark') }}</textarea>
             </div>
             
-            <!-- Active Status -->
-            <div class="mt-6">
-                <label class="inline-flex items-center">
-                    <input type="checkbox" name="isactive" value="1" {{ old('isactive', true) ? 'checked' : '' }}
-                           class="rounded border-gray-300 text-navy-600 shadow-sm focus:border-navy-300 focus:ring focus:ring-navy-200 focus:ring-opacity-50">
-                    <span class="ml-2 text-sm text-gray-600">Car is active (available for lessons)</span>
-                </label>
+            <!-- Status -->
+            <div class="md:col-span-2">
+                <div class="flex items-center mt-4">
+                    <input type="checkbox" id="isactive" name="isactive" class="h-4 w-4 text-navy-600 border-gray-300 rounded focus:ring-navy-500"
+                        {{ old('isactive', true) ? 'checked' : '' }}>
+                    <label for="isactive" class="ml-2 block text-sm text-gray-900">
+                        Active (available for lessons)
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    Checking this box makes the car available for scheduling lessons
+                </p>
             </div>
             
             <!-- Form Actions -->

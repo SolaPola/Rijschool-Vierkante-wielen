@@ -97,14 +97,6 @@ class Carscontroler extends Controller
                 'remark' => 'nullable|string|max:500',
             ]);
 
-            // Make sure fuel is a valid enum value
-            if (!in_array($validated['fuel'], ['petrol', 'diesel', 'electric', 'hybrid'])) {
-                $validated['fuel'] = 'petrol'; // Default to petrol if invalid
-            }
-
-            // Set isactive based on checkbox presence
-            $validated['isactive'] = $request->has('isactive') ? 1 : 0;
-            
             // Create the car using direct SQL to avoid any potential ORM issues
             $car = new Car();
             $car->brand = $validated['brand'];
@@ -112,8 +104,7 @@ class Carscontroler extends Controller
             $car->license_plate = $validated['license_plate'];
             $car->fuel = $validated['fuel'];
             $car->remark = $validated['remark'];
-            $car->isactive = $validated['isactive'];
-            
+            $car->isactive = (bool)$request->has('isactive');
             $car->save();
 
             // Debug output to see what's happening
@@ -234,11 +225,23 @@ class Carscontroler extends Controller
                 ->with('error', 'Error retrieving car details: ' . $e->getMessage());
         }
     }
+    /**
+     * Show the form for editing the specified car.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function edit($id)
     {
-        // Logic to retrieve and display a specific record for editing
-        return view('edit', compact('id'));
+        try {
+            $car = Car::findOrFail($id);
+            return view('admin.cars.edit', compact('car'));
+        } catch (\Exception $e) {
+            return redirect()->route('Admin.Cars.index')
+                ->with('error', 'Error retrieving car: ' . $e->getMessage());
+        }
     }
+
     /**
      * Update the specified car in storage.
      *
@@ -251,6 +254,17 @@ class Carscontroler extends Controller
         try {
             $car = Car::findOrFail($id);
             
+            // Check if license plate already exists for another car
+            $existingCar = Car::where('license_plate', $request->license_plate)
+                ->where('id', '!=', $id)
+                ->first();
+                
+            if ($existingCar) {
+                return redirect()->back()
+                    ->withInput() // Keep all form input
+                    ->with('error', 'Een lesauto met dit kenteken bestaat al in het systeem');
+            }
+            
             // Validate the incoming request
             $validated = $request->validate([
                 'brand' => 'required|string|max:100',
@@ -258,26 +272,50 @@ class Carscontroler extends Controller
                 'license_plate' => 'required|string|max:20|unique:cars,license_plate,' . $id,
                 'fuel' => 'required|in:electric,petrol,diesel,hybrid',
                 'remark' => 'nullable|string|max:500',
-                'maintenance_reason' => 'nullable|string|max:255',
-                'maintenance_until' => 'nullable|date',
             ]);
 
-            // If car is active, clear maintenance fields
-            if ($request->has('isactive')) {
-                $validated['isactive'] = true;
-                $validated['maintenance_reason'] = null;
-                $validated['maintenance_until'] = null;
-            } else {
-                $validated['isactive'] = false;
-            }
-            
-            // Update the car
-            $car->update($validated);
+            // Explicitly set isactive as a boolean value
+            $car->brand = $validated['brand'];
+            $car->type = $validated['type'];
+            $car->license_plate = $validated['license_plate'];
+            $car->fuel = $validated['fuel'];
+            $car->remark = $validated['remark'];
+            $car->isactive = (bool)$request->has('isactive');
+            $car->save();
+
+            // Debug logging
+            \Illuminate\Support\Facades\Log::info('Car updated successfully', [
+                'car_id' => $car->id,
+                'brand' => $car->brand,
+                'type' => $car->type,
+                'license_plate' => $car->license_plate,
+                'fuel' => $car->fuel,
+                'isactive' => $car->isactive
+            ]);
 
             return redirect()->route('Admin.Cars.index')
                 ->with('success', 'Car updated successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors specifically for license plate uniqueness
+            $errors = $e->validator->errors();
+            
+            if ($errors->has('license_plate') && 
+                str_contains($errors->first('license_plate'), 'taken')) {
+                return redirect()->back()
+                    ->withInput() // Keep all form input
+                    ->with('error', 'Een lesauto met dit kenteken bestaat al in het systeem');
+            }
+            
+            // For other validation errors, return with the validation errors
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (\Exception $e) {
-            return redirect()->route('Admin.Cars.index')
+            \Illuminate\Support\Facades\Log::error('Error updating car: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            return redirect()->back()
+                ->withInput() // Keep all form input
                 ->with('error', 'Error updating car: ' . $e->getMessage());
         }
     }

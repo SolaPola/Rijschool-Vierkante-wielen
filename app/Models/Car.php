@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Car extends Model
 {
@@ -34,7 +35,7 @@ class Car extends Model
      */
     protected $casts = [
         'isactive' => 'boolean',
-        'maintenance_until' => 'date',
+        'maintenance_until' => 'datetime',
     ];
 
     /**
@@ -84,6 +85,9 @@ class Car extends Model
      */
     public function isInMaintenance()
     {
-        return !$this->isactive && $this->maintenance_until && $this->maintenance_until->isFuture();
+        return !$this->isactive && 
+               $this->maintenance_reason && 
+               $this->maintenance_until && 
+               $this->maintenance_until->isAfter(Carbon::now());
     }
 }
