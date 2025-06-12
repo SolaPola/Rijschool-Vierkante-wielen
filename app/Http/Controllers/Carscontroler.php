@@ -348,4 +348,109 @@ class Carscontroler extends Controller
                 ->with('error', 'Error setting car to maintenance: ' . $e->getMessage());
         }
     }
+    /**
+     * Remove the specified car from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            
+            // Check if the car has any future lessons scheduled
+            $futureLessonsCount = 0;
+            if (class_exists('App\Models\Lesson')) {
+                $futureLessonsCount = \App\Models\Lesson::where('vehicle_id', $id)
+                    ->where('start_time', '>', now())
+                    ->where('status', '!=', 'cancelled')
+                    ->count();
+            }
+            
+            // If the car has future lessons, don't allow deletion
+            if ($futureLessonsCount > 0) {
+                return redirect()->route('Admin.Cars.index')
+                    ->with('error', 'Cannot delete car. It has ' . $futureLessonsCount . ' future lessons scheduled.');
+            }
+            
+            // Log car details before deletion for auditing
+            \Illuminate\Support\Facades\Log::info('Deleting car', [
+                'car_id' => $car->id,
+                'brand' => $car->brand,
+                'type' => $car->type,
+                'license_plate' => $car->license_plate
+            ]);
+            
+            // Delete the car
+            $car->delete();
+            
+            return redirect()->route('Admin.Cars.index')
+                ->with('success', 'Lesauto succesvol verwijderd');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting car: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            return redirect()->route('Admin.Cars.index')
+                ->with('error', 'Error deleting car: ' . $e->getMessage());
+        }
+    }
+    /**
+     * Cancel all future lessons for a specific car.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cancelAllLessons($id)
+    {
+        try {
+            $car = Car::findOrFail($id);
+            
+            // Check if car exists
+            if (!$car) {
+                return redirect()->route('Admin.Cars.index')
+                    ->with('error', 'Car not found');
+            }
+            
+            // Get count of future lessons
+            $futureLessonsCount = 0;
+            if (class_exists('App\Models\Lesson')) {
+                $futureLessons = \App\Models\Lesson::where('vehicle_id', $id)
+                    ->where('start_time', '>', now())
+                    ->where('status', '!=', 'cancelled')
+                    ->get();
+                    
+                $futureLessonsCount = $futureLessons->count();
+                
+                // Cancel all future lessons
+                foreach ($futureLessons as $lesson) {
+                    $lesson->status = 'cancelled';
+                    $lesson->notes = $lesson->notes . "\n[AUTO-CANCELLED] Car removed from service on " . now()->format('Y-m-d H:i');
+                    $lesson->save();
+                }
+            }
+            
+            // Set car to inactive
+            $car->isactive = false;
+            $car->save();
+            
+            // Log action for auditing
+            \Illuminate\Support\Facades\Log::info('All future lessons cancelled for car', [
+                'car_id' => $car->id,
+                'brand' => $car->brand,
+                'type' => $car->type,
+                'license_plate' => $car->license_plate,
+                'lessons_cancelled' => $futureLessonsCount
+            ]);
+            
+            return redirect()->route('Admin.Cars.show', $id)
+                ->with('success', "Successfully cancelled {$futureLessonsCount} future lessons for this car");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error cancelling car lessons: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            return redirect()->route('Admin.Cars.show', $id)
+                ->with('error', 'Error cancelling lessons: ' . $e->getMessage());
+        }
+    }
 }

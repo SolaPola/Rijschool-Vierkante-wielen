@@ -104,7 +104,7 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/Admin/Cars/{id}', [Carscontroler::class, 'update'])->name('Admin.Cars.update');
     Route::put('/Admin/Cars/{id}/maintenance', [Carscontroler::class, 'setMaintenance'])->name('Admin.Cars.maintenance');
     Route::delete('/Admin/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Admin.Cars.destroy');
-    
+    Route::post('/Admin/Cars/{id}/cancel-lessons', [Carscontroler::class, 'cancelAllLessons'])->name('Admin.Cars.cancelLessons');
 });
 
 // Update instructor routes - fix the route naming issue

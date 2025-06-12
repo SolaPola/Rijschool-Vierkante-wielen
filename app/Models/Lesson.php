@@ -6,17 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class Lesson extends Model
 {
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'lessons';
 
     /**
      * The attributes that are mass assignable.
@@ -24,15 +16,15 @@ class Lesson extends Model
      * @var array
      */
     protected $fillable = [
-        'student_id',
         'instructor_id',
+        'student_id',
         'vehicle_id',
+        'title',
+        'description',
         'start_time',
         'end_time',
         'status',
-        'title',
-        'description',
-        'notes',
+        'notes'
     ];
 
     /**
@@ -47,6 +39,8 @@ class Lesson extends Model
 
     /**
      * Get the student that owns the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function student(): BelongsTo
     {
@@ -55,6 +49,8 @@ class Lesson extends Model
 
     /**
      * Get the instructor that owns the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function instructor(): BelongsTo
     {
@@ -62,8 +58,9 @@ class Lesson extends Model
     }
 
     /**
-     * Get the car that is used for the lesson.
-     * This relationship uses vehicle_id to link to cars table
+     * Get the car used for the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function car(): BelongsTo
     {
@@ -71,33 +68,27 @@ class Lesson extends Model
     }
 
     /**
-     * Check if there are any overlapping lessons with the same car
+     * Check if there's an overlapping car schedule for the given time period
      *
      * @param int $carId
-     * @param string $startTime
-     * @param string $endTime
-     * @param int|null $excludeLessonId Exclude a specific lesson from the check (useful for updates)
+     * @param string $startDateTime
+     * @param string $endDateTime
+     * @param int|null $excludeLessonId
      * @return bool
      */
-    public static function hasOverlappingCarSchedule($carId, $startTime, $endTime, $excludeLessonId = null)
+    public static function hasOverlappingCarSchedule($carId, $startDateTime, $endDateTime, $excludeLessonId = null)
     {
         $query = self::where('vehicle_id', $carId)
-            ->where(function($query) use ($startTime, $endTime) {
-                // Find lessons where:
-                // 1. The lesson starts during our new lesson time
-                // 2. The lesson ends during our new lesson time
-                // 3. The lesson starts before and ends after our new lesson time
-                $query->where(function($q) use ($startTime, $endTime) {
-                    $q->whereBetween('start_time', [$startTime, $endTime]);
-                })->orWhere(function($q) use ($startTime, $endTime) {
-                    $q->whereBetween('end_time', [$startTime, $endTime]);
-                })->orWhere(function($q) use ($startTime, $endTime) {
-                    $q->where('start_time', '<=', $startTime)
-                      ->where('end_time', '>=', $endTime);
-                });
-            })
-            ->where('status', '!=', 'cancelled'); // Ignore cancelled lessons
-            
+            ->where('status', '!=', 'cancelled')
+            ->where(function($q) use ($startDateTime, $endDateTime) {
+                $q->whereBetween('start_time', [$startDateTime, $endDateTime])
+                  ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                  ->orWhere(function($innerQ) use ($startDateTime, $endDateTime) {
+                      $innerQ->where('start_time', '<=', $startDateTime)
+                             ->where('end_time', '>=', $endDateTime);
+                  });
+            });
+        
         // Exclude the current lesson if we're updating
         if ($excludeLessonId) {
             $query->where('id', '!=', $excludeLessonId);

@@ -230,16 +230,22 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
-                                <a href="{{ route('Admin.Cars.edit', $car) }}" class="text-yellow-600 hover:text-yellow-800">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('Admin.Cars.destroy', $car) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this car?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                <div class="flex items-center justify-end space-x-3">
+                                    <a href="{{ route('Admin.Cars.show', $car->id) }}" class="text-navy-600 hover:text-navy-800">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('Admin.Cars.edit', $car) }}" class="text-yellow-600 hover:text-yellow-800">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" onclick="openDeleteModal('{{ $car->id }}', '{{ $car->brand }}', '{{ $car->type }}', '{{ $car->license_plate }}')" class="text-red-600 hover:text-red-800 cursor-pointer">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                </form>
+                                    
+                                    <form id="delete-form-{{ $car->id }}" action="{{ route('Admin.Cars.destroy', $car) }}" method="POST" class="hidden">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -258,4 +264,73 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="fixed inset-0 bg-black opacity-50"></div>
+    <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full relative z-10">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Bevestig verwijderen
+                    </h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500" id="modal-description">
+                            Weet je zeker dat je deze lesauto wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.
+                        </p>
+                        <p class="text-sm font-medium mt-2" id="car-details"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button type="button" id="confirmDelete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                Ja, verwijderen
+            </button>
+            <button type="button" onclick="closeDeleteModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Annuleren
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentCarId = null;
+
+    function openDeleteModal(carId, brand, type, licensePlate) {
+        currentCarId = carId;
+        document.getElementById('car-details').textContent = `${brand} ${type} - Kenteken: ${licensePlate}`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        currentCarId = null;
+    }
+
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        if (currentCarId) {
+            document.getElementById(`delete-form-${currentCarId}`).submit();
+        }
+    });
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    });
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && !document.getElementById('deleteModal').classList.contains('hidden')) {
+            closeDeleteModal();
+        }
+    });
+</script>
 @endsection

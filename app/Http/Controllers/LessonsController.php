@@ -240,19 +240,20 @@ class LessonsController extends Controller
      */
     public function edit($id)
     {
-        $lesson = DB::select('CALL GetDrivingLessonById(?)', [$id]);
-        
-        if (empty($lesson)) {
+        try {
+            // Retrieve the lesson with relationships
+            $lesson = Lesson::with(['student.user', 'instructor.user', 'car'])
+                ->findOrFail($id);
+            
+            // Get all active cars for the dropdown
+            $cars = Car::where('isactive', true)->get();
+            
+            // Pass data to the view
+            return view('lessons.edit', compact('lesson', 'cars'));
+        } catch (\Exception $e) {
             return redirect()->route('Lessons.index')
-                ->with('error', 'Driving lesson not found');
+                ->with('error', 'Error retrieving lesson: ' . $e->getMessage());
         }
-
-        $lesson = $lesson[0];
-        $registrations = Registration::where('isactive', true)->get();
-        $instructors = Instructor::where('isactive', true)->get();
-        $cars = Car::where('isactive', true)->get();
-
-        return view('lessons.edit', compact('lesson', 'registrations', 'instructors', 'cars'));
     }
 
     /**
@@ -265,20 +266,20 @@ class LessonsController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            // Find the lesson
+            $lesson = Lesson::findOrFail($id);
+            
+            // Validate the request
             $validated = $request->validate([
-                'registration_id' => 'required|exists:registrations,id',
-                'instructor_id' => 'required|exists:instructors,id',
                 'car_id' => 'required|exists:cars,id',
                 'start_date' => 'required|date',
                 'start_time' => 'required|date_format:H:i',
                 'end_date' => 'required|date',
                 'end_time' => 'required|date_format:H:i',
-                'lesson_status' => 'required|in:Planned,Completed,Canceled',
-                'goal' => 'nullable|string',
-                'student_comment' => 'nullable|string',
-                'commentary_instructor' => 'nullable|string',
-                'isactive' => 'boolean',
-                'remark' => 'nullable|string'
+                'status' => 'required|in:scheduled,confirmed,completed,cancelled',
+                'title' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
+                'notes' => 'nullable|string',
             ]);
 
             // Format start and end datetime
@@ -286,31 +287,51 @@ class LessonsController extends Controller
             $endDateTime = $validated['end_date'] . ' ' . $validated['end_time'] . ':00';
             
             // Check if there's already a different lesson scheduled with this car at the same time
-            if (Lesson::hasOverlappingCarSchedule($validated['car_id'], $startDateTime, $endDateTime, $id)) {
+            $hasConflict = Lesson::where('vehicle_id', $validated['car_id'])
+                ->where('id', '!=', $id) // Exclude the current lesson
+                ->where('status', '!=', 'cancelled') // Only consider non-cancelled lessons
+                ->where(function($query) use ($startDateTime, $endDateTime) {
+                    $query->whereBetween('start_time', [$startDateTime, $endDateTime])
+                        ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                        ->orWhere(function($q) use ($startDateTime, $endDateTime) {
+                            $q->where('start_time', '<=', $startDateTime)
+                              ->where('end_time', '>=', $endDateTime);
+                        });
+                })
+                ->exists();
+                
+            if ($hasConflict) {
                 return redirect()->back()
                     ->withInput() // Keep all form input
                     ->with('error', 'Deze lesauto is al ingepland op het gekozen tijdstip');
             }
             
-            // Call the stored procedure to update the driving lesson
-            DB::statement('CALL UpdateDrivingLesson(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                $id,
-                $validated['registration_id'],
-                $validated['instructor_id'],
-                $validated['car_id'],
-                $startDateTime,
-                $endDateTime,
-                $validated['lesson_status'],
-                $validated['goal'] ?? null,
-                $validated['student_comment'] ?? null,
-                $validated['commentary_instructor'] ?? null,
-                $validated['isactive'] ?? true,
-                $validated['remark'] ?? null
+            // Update the lesson with validated data
+            $lesson->vehicle_id = $validated['car_id'];
+            $lesson->start_time = $startDateTime;
+            $lesson->end_time = $endDateTime;
+            $lesson->status = $validated['status'];
+            $lesson->title = $validated['title'] ?? $lesson->title;
+            $lesson->description = $validated['description'] ?? $lesson->description;
+            $lesson->notes = $validated['notes'] ?? $lesson->notes;
+            
+            $lesson->save();
+
+            // Log the successful update
+            \Illuminate\Support\Facades\Log::info('Lesson updated successfully', [
+                'lesson_id' => $lesson->id,
+                'start_time' => $lesson->start_time,
+                'end_time' => $lesson->end_time,
+                'vehicle_id' => $lesson->vehicle_id
             ]);
 
+            // Redirect with success message
             return redirect()->route('Lessons.index')
-                ->with('success', 'Driving lesson updated successfully');
+                ->with('success', 'Rijles succesvol bijgewerkt');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error updating lesson: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
             return redirect()->back()
                 ->withInput() // Keep all form input
                 ->with('error', 'Error updating lesson: ' . $e->getMessage());
@@ -325,10 +346,32 @@ class LessonsController extends Controller
      */
     public function destroy($id)
     {
-        DB::statement('CALL DeleteDrivingLesson(?)', [$id]);
-        
-        return redirect()->route('Lessons.index')
-            ->with('success', 'Driving lesson deleted successfully');
+        try {
+            // Find the lesson
+            $lesson = Lesson::findOrFail($id);
+            
+            // Log the lesson details before deletion
+            \Illuminate\Support\Facades\Log::info('Deleting lesson', [
+                'lesson_id' => $lesson->id,
+                'student_id' => $lesson->student_id,
+                'instructor_id' => $lesson->instructor_id,
+                'start_time' => $lesson->start_time,
+                'deleted_by' => Auth::id()
+            ]);
+            
+            // Delete the lesson directly using Eloquent instead of the stored procedure
+            $lesson->delete();
+            
+            // Redirect with success message
+            return redirect()->route('Lessons.index')
+                ->with('success', 'Rijles succesvol geannuleerd');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting lesson: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            return redirect()->route('Lessons.index')
+                ->with('error', 'Error deleting lesson: ' . $e->getMessage());
+        }
     }
 
     /**
