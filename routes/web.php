@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+
 // Student specific routes
 Route::middleware([StudentMiddleware::class])->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
@@ -82,8 +83,7 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
-    // Change from GET to DELETE for proper RESTful deletion
-    Route::delete('/students/{student}', [StudentController::class, 'delete'])->name('students.delete');
+    Route::get('/students/{student}/delete', [StudentController::class, 'delete'])->name('students.delete');
 });
 
 require __DIR__ . '/auth.php';

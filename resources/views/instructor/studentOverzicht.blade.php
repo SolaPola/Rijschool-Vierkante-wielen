@@ -178,7 +178,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center space-x-3">
-                                    <a href="#"
+                                    <a href="{{ route('students.edit', $student['id']) }}"
                                         class="bg-yellow-500 hover:bg-yellow-400 text-navy-800 py-1 px-3 rounded-md text-sm inline-flex items-center">
                                         <i class="fas fa-edit mr-1"></i> Edit
                                     </a>
@@ -188,10 +188,6 @@
                                         class="delete-btn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
                                         <i class="fas fa-trash mr-1"></i> Delete
                                     </button>
-                                    <a href="#"
-                                        class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
-                                        <i class="fas fa-calendar-alt mr-1"></i> Lessons
-                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -482,6 +478,10 @@
                     deleteConfirmPopup.classList.add('hidden');
                     successPopup.classList.add('hidden');
                 }
+            });
+        });
+    </script>
+@endsection
             });
         });
     </script>

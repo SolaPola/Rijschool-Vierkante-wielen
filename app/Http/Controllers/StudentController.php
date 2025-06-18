@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -132,6 +133,101 @@ class StudentController extends Controller
             
             return redirect()->back()->withInput()
                 ->with('error', 'Error creating student: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show the form for editing the specified student.
+     *
+     * @param  \App\Models\Student  $student
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Student $student)
+    {
+        // Load the associated user
+        $student->load('user');
+        
+        return view('students.edit', compact('student'));
+    }
+
+    /**
+     * Update the specified student in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Student  $student
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Student $student)
+    {
+        try {
+            // Load the associated user
+            $student->load('user');
+            $user = $student->user;
+
+            // If user doesn't exist, return an error
+            if (!$user) {
+                return redirect()->back()->withInput()
+                    ->with('error', 'User associated with this student not found.');
+            }
+
+            // Validate user data
+            $validated = $request->validate([
+                'firstname' => ['required', 'string', 'max:255'],
+                'infix' => ['nullable', 'string', 'max:255'],
+                'lastname' => ['required', 'string', 'max:255'],
+                'birthdate' => ['required', 'date'],
+                'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'relation_number' => ['nullable', 'string', 'max:255'],
+                'isactive' => ['boolean'],
+            ]);
+
+            // Start a database transaction
+            DB::beginTransaction();
+
+            // Update user data
+            $userData = [
+                'firstname' => $validated['firstname'],
+                'infix' => $validated['infix'],
+                'lastname' => $validated['lastname'],
+                'birthdate' => $validated['birthdate'],
+                'email' => $validated['email'],
+                'is_active' => $request->has('isactive') ? 1 : 0,
+            ];
+
+            // Only update password if provided
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($validated['password']);
+            }
+
+            $user->update($userData);
+
+            // Update student data
+            $student->update([
+                'relation_number' => $validated['relation_number'] ?? $student->relation_number,
+                'isactive' => $request->has('isactive'),
+            ]);
+
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true]);
+            }
+
+            // Redirect to student overview page after successful update
+            return redirect()->route('instructors.students')
+                ->with('success', 'Student updated successfully.');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+            
+            return redirect()->back()->withInput()
+                ->with('error', 'Error updating student: ' . $e->getMessage());
         }
     }
 
