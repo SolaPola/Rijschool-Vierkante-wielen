@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
             return;
         }
         
-        // Instructor user
+        //Instructor user
         if (!User::where('email', 'instructor@example.com')->exists()) {
             $user = User::factory()->create([
                 'firstname' => 'Instructor',
@@ -117,7 +117,7 @@ class DatabaseSeeder extends Seeder
                     'role_id' => $instructorRole->id,
                 ]);
                 
-                // Create instructor record
+                //Create instructor record
                 Instructor::create([
                     'user_id' => $user->id,
                     'number' => 'INST-' . str_pad($index + 2, 3, '0', STR_PAD_LEFT), // Start from 002 since 001 is for the main instructor
@@ -129,7 +129,7 @@ class DatabaseSeeder extends Seeder
             }
         }
         
-        // Ensure all instructor users have instructor records
+        //Ensure all instructor users have instructor records
         $instructorUsers = User::where('role_id', $instructorRole->id)->get();
         
         foreach ($instructorUsers as $user) {

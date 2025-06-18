@@ -27,6 +27,15 @@
             </div>
         </div>
     @endif
+
+    @if (session('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-md">
+            <div class="flex">
+                <div class="flex-shrink-0"><i class="fas fa-exclamation-circle text-red-500"></i></div>
+                <div class="ml-3"><p class="font-medium">{{ session('error') }}</p></div>
+            </div>
+        </div>
+    @endif
     
     <!-- Lesson Form -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -37,6 +46,13 @@
         <form action="{{ route('Lessons.store') }}" method="POST" class="p-6">
             @csrf
             
+            <!-- Debugging info for troubleshooting -->
+            <div class="mb-4 p-3 bg-gray-100 rounded text-xs" style="display: none;">
+                <p>Form will submit to: {{ route('Lessons.store') }}</p>
+                <p>HTTP Method: POST</p>
+                <p>CSRF Token is present: {{ csrf_token() ? 'Yes' : 'No' }}</p>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Student Selection -->
                 <div>
@@ -46,8 +62,7 @@
                         <option value="">Select a student</option>
                         @foreach ($students as $student)
                             <option value="{{ $student->id }}" {{ old('student_id') == $student->id ? 'selected' : '' }}>
-                                {{ $student->user->firstname }} {{ $student->user->infix }} {{ $student->user->lastname }} 
-                                ({{ $student->relation_number }})
+                                {{ $student->user->firstname }} {{ $student->user->lastname }}
                             </option>
                         @endforeach
                     </select>
@@ -61,10 +76,7 @@
                         <option value="">Select an instructor</option>
                         @foreach ($instructors as $instructor)
                             <option value="{{ $instructor->id }}" {{ old('instructor_id') == $instructor->id ? 'selected' : '' }}>
-                                {{ $instructor->user->firstname }} {{ $instructor->user->infix }} {{ $instructor->user->lastname }}
-                                @if(isset($instructor->number))
-                                ({{ $instructor->number }})
-                                @endif
+                                {{ $instructor->user->firstname }} {{ $instructor->user->lastname }}
                             </option>
                         @endforeach
                     </select>
@@ -89,9 +101,10 @@
                     <label for="lesson_status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select id="lesson_status" name="lesson_status" required
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-500 focus:border-navy-500 block w-full p-2.5">
-                        <option value="Planned" {{ old('lesson_status') == 'Planned' ? 'selected' : '' }}>Planned</option>
-                        <option value="Completed" {{ old('lesson_status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="Canceled" {{ old('lesson_status') == 'Canceled' ? 'selected' : '' }}>Canceled</option>
+                        <option value="scheduled" {{ old('lesson_status') == 'scheduled' ? 'selected' : '' }}>Planned</option>
+                        <option value="confirmed" {{ old('lesson_status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="completed" {{ old('lesson_status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="cancelled" {{ old('lesson_status') == 'cancelled' ? 'selected' : '' }}>Canceled</option>
                     </select>
                 </div>
                 

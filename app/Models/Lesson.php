@@ -6,17 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class Lesson extends Model
 {
     use HasFactory;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'lessons';
 
     /**
      * The attributes that are mass assignable.
@@ -26,13 +18,13 @@ class Lesson extends Model
     protected $fillable = [
         'instructor_id',
         'student_id',
+        'vehicle_id',
         'title',
         'description',
         'start_time',
         'end_time',
         'status',
-        'notes',
-        'vehicle_id', // This is the correct column name instead of car_id
+        'notes'
     ];
 
     /**
@@ -46,26 +38,62 @@ class Lesson extends Model
     ];
 
     /**
-     * Get the instructor associated with the lesson.
+     * Get the student that owns the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function instructor()
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Instructor::class, 'instructor_id');
+        return $this->belongsTo(Student::class);
     }
 
     /**
-     * Get the car associated with the lesson.
+     * Get the instructor that owns the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function car()
+    public function instructor(): BelongsTo
     {
-        return $this->belongsTo(Car::class, 'vehicle_id'); // Using vehicle_id as foreign key
+        return $this->belongsTo(Instructor::class);
     }
-    
+
     /**
-     * Get the student associated with the lesson.
+     * Get the car used for the lesson.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function student()
+    public function car(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(Car::class, 'vehicle_id');
+    }
+
+    /**
+     * Check if there's an overlapping car schedule for the given time period
+     *
+     * @param int $carId
+     * @param string $startDateTime
+     * @param string $endDateTime
+     * @param int|null $excludeLessonId
+     * @return bool
+     */
+    public static function hasOverlappingCarSchedule($carId, $startDateTime, $endDateTime, $excludeLessonId = null)
+    {
+        $query = self::where('vehicle_id', $carId)
+            ->where('status', '!=', 'cancelled')
+            ->where(function($q) use ($startDateTime, $endDateTime) {
+                $q->whereBetween('start_time', [$startDateTime, $endDateTime])
+                  ->orWhereBetween('end_time', [$startDateTime, $endDateTime])
+                  ->orWhere(function($innerQ) use ($startDateTime, $endDateTime) {
+                      $innerQ->where('start_time', '<=', $startDateTime)
+                             ->where('end_time', '>=', $endDateTime);
+                  });
+            });
+        
+        // Exclude the current lesson if we're updating
+        if ($excludeLessonId) {
+            $query->where('id', '!=', $excludeLessonId);
+        }
+        
+        return $query->exists();
     }
 }

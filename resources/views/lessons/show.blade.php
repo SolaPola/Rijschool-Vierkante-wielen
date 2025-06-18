@@ -1,106 +1,123 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            {{ __('Driving Lesson Details') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex justify-between mb-6">
-                        <h3 class="text-lg font-semibold">Lesson #{{ $lesson->id }}</h3>
-                        <div>
-                            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
-                                {{ $lesson->lesson_status == 'Completed' ? 'bg-green-100 text-green-800' : '' }}
-                                {{ $lesson->lesson_status == 'Planned' ? 'bg-blue-100 text-blue-800' : '' }}
-                                {{ $lesson->lesson_status == 'Canceled' ? 'bg-red-100 text-red-800' : '' }}">
-                                {{ $lesson->lesson_status }}
-                            </span>
-                            @if(!$lesson->isactive)
-                                <span class="ml-2 px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                    Inactive
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700 mb-2">Student Information</h4>
-                            <p><strong>Name:</strong> {{ $lesson->student_name }}</p>
-                            <a href="{{ route('Lessons.student', $lesson->student_id) }}" class="text-indigo-600 hover:text-indigo-900 mt-2 inline-block">
-                                View All Lessons for This Student
-                            </a>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700 mb-2">Instructor Information</h4>
-                            <p><strong>Name:</strong> {{ $lesson->instructor_name }}</p>
-                            <p><strong>Number:</strong> {{ $lesson->instructor_number }}</p>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700 mb-2">Car Information</h4>
-                            <p><strong>Brand & Type:</strong> {{ $lesson->brand }} {{ $lesson->type }}</p>
-                            <p><strong>License Plate:</strong> {{ $lesson->license_plate }}</p>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700 mb-2">Date & Time</h4>
-                            <p><strong>Start:</strong> {{ date('d-m-Y', strtotime($lesson->start_date)) }} at {{ date('H:i', strtotime($lesson->start_time)) }}</p>
-                            <p><strong>End:</strong> {{ date('d-m-Y', strtotime($lesson->end_date)) }} at {{ date('H:i', strtotime($lesson->end_time)) }}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 border-t pt-4">
-                        <h4 class="font-medium text-gray-700 mb-2">Lesson Goal</h4>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p>{{ $lesson->goal ?? 'No goal specified' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 border-t pt-4">
-                        <h4 class="font-medium text-gray-700 mb-2">Student Comment</h4>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p>{{ $lesson->student_comment ?? 'No student comment' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 border-t pt-4">
-                        <h4 class="font-medium text-gray-700 mb-2">Instructor Commentary</h4>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <p>{{ $lesson->commentary_instructor ?? 'No instructor commentary' }}</p>
-                        </div>
-                    </div>
-
-                    @if($lesson->remark)
-                        <div class="mt-6 border-t pt-4">
-                            <h4 class="font-medium text-gray-700 mb-2">Remarks</h4>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <p>{{ $lesson->remark }}</p>
-                            </div>
-                        </div>
+    <x-slot name="title">Lesson Details - Rijschool Vierkante Wielen</x-slot>
+    
+    <!-- Page header -->
+    <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-navy-800">Lesson Details</h2>
+        <a href="{{ route('Lessons.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md inline-flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Lessons
+        </a>
+    </div>
+    
+    <!-- Alerts -->
+    @if (session('error'))
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-md">
+            <div class="flex">
+                <div class="flex-shrink-0"><i class="fas fa-exclamation-circle text-red-500"></i></div>
+                <div class="ml-3"><p class="font-medium">{{ session('error') }}</p></div>
+            </div>
+        </div>
+    @endif
+    
+    <!-- Lesson Details Card -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 bg-navy-50">
+            <h3 class="font-medium text-navy-800">Lesson #{{ $lesson->id }}</h3>
+        </div>
+        
+        <div class="p-6">
+            <!-- Status Badge -->
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <span class="text-gray-700 font-medium">Status: </span>
+                    @if ($lesson->lesson_status == 'scheduled' || $lesson->lesson_status == 'Planned')
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Scheduled</span>
+                    @elseif ($lesson->lesson_status == 'confirmed' || $lesson->lesson_status == 'Confirmed')
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Confirmed</span>
+                    @elseif ($lesson->lesson_status == 'completed' || $lesson->lesson_status == 'Completed')
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Completed</span>
+                    @elseif ($lesson->lesson_status == 'cancelled' || $lesson->lesson_status == 'Canceled')
+                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">Cancelled</span>
+                    @else
+                        <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">{{ $lesson->lesson_status }}</span>
                     @endif
-
-                    <div class="flex items-center justify-end mt-6">
-                        <a href="{{ route('Lessons.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-800 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            Back to List
-                        </a>
-                        <a href="{{ route('Lessons.edit', $lesson->id) }}" class="ml-2 inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 active:bg-yellow-800 focus:outline-none focus:border-yellow-900 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            Edit
-                        </a>
-                        <form method="POST" action="{{ route('Lessons.destroy', $lesson->id) }}" class="inline-block ml-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:border-red-900 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150" onclick="return confirm('Are you sure you want to delete this lesson?')">
-                                Delete
-                            </button>
-                        </form>
+                </div>
+                <div>
+                    <a href="{{ route('Lessons.edit', $lesson->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-navy-800 py-2 px-4 rounded-md inline-flex items-center">
+                        <i class="fas fa-edit mr-2"></i> Edit Lesson
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Basic Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Student</h4>
+                    <p class="text-gray-700">{{ $lesson->student_name ?? 'Unknown Student' }}</p>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Instructor</h4>
+                    <p class="text-gray-700">{{ $lesson->instructor_name ?? 'Unknown Instructor' }}</p>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Vehicle</h4>
+                    <p class="text-gray-700">{{ $lesson->brand ?? '' }} {{ $lesson->model ?? '' }}</p>
+                </div>
+            </div>
+            
+            <!-- Time Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Start Time</h4>
+                    <p class="text-gray-700">
+                        {{ isset($lesson->start_datetime) ? date('F j, Y \a\t g:i A', strtotime($lesson->start_datetime)) : 'N/A' }}
+                    </p>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">End Time</h4>
+                    <p class="text-gray-700">
+                        {{ isset($lesson->end_datetime) ? date('F j, Y \a\t g:i A', strtotime($lesson->end_datetime)) : 'N/A' }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Goal/Details -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-navy-800 mb-3">Lesson Goal</h4>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-700">{{ $lesson->goal ?? 'No goal specified' }}</p>
+                </div>
+            </div>
+            
+            <!-- Comments Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Student Comments</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700">{{ $lesson->student_comment ?? 'No student comments' }}</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-navy-800 mb-3">Instructor Comments</h4>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700">{{ $lesson->commentary_instructor ?? 'No instructor comments' }}</p>
                     </div>
                 </div>
             </div>
+            
+            <!-- Additional Remarks -->
+            @if(isset($lesson->remark) && !empty($lesson->remark) && $lesson->remark != $lesson->student_comment)
+            <div class="mt-6">
+                <h4 class="text-lg font-semibold text-navy-800 mb-3">Additional Remarks</h4>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-gray-700">{{ $lesson->remark }}</p>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
