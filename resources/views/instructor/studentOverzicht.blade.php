@@ -420,7 +420,7 @@
                     const studentId = this.getAttribute('data-student-id');
                     const studentName = this.getAttribute('data-student-name');
                     
-                    // Set the correct route with DELETE method
+                    // Update the form action to use the correct route
                     deleteForm.action = `/admin/students/${studentId}`;
                     confirmMessage.textContent = `Are you sure you want to delete ${studentName}?`;
                     deleteConfirmPopup.classList.remove('hidden');
@@ -447,7 +447,20 @@
                     }
                 })
                 .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     deleteConfirmPopup.classList.add('hidden');
+                    
+                    if (data.success) {
+                        successMessage.textContent = 'Student deleted successfully.';
+                    } else {
+                        successMessage.textContent = data.message || 'Student deleted.';
+                    }
+                    
                     successPopup.classList.remove('hidden');
                     
                     // Auto-hide success popup after 2 seconds
@@ -457,6 +470,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    deleteConfirmPopup.classList.add('hidden');
                     successMessage.textContent = 'Error deleting student. Please try again.';
                     successPopup.classList.remove('hidden');
                 });

@@ -8,6 +8,7 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -232,9 +233,9 @@ class StudentController extends Controller
     }
 
     /**
-     * Delete a student and their user account.
-     *
-     * @param  \App\Models\Student  $student
+     * Delete the specified student
+     * 
+     * @param Student $student
      * @return \Illuminate\Http\Response
      */
     public function delete(Student $student)
@@ -242,13 +243,14 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
             
-            // Find the user associated with this student
-            $user = User::find($student->user_id);
+            // Find the user linked to this student
+            $userId = $student->user_id;
+            $user = User::find($userId);
             
-            // Delete the student record
+            // Delete the student first (handles foreign key constraints)
             $student->delete();
             
-            // Delete the user record if it exists
+            // Delete the associated user if one exists
             if ($user) {
                 $user->delete();
             }
@@ -256,20 +258,22 @@ class StudentController extends Controller
             DB::commit();
             
             if (request()->ajax()) {
-                return response()->json(['success' => true]);
+                return response()->json(['success' => true, 'message' => 'Student deleted successfully']);
             }
             
-            return redirect()->route('students.index')
+            return redirect()->route('instructors.students')
                 ->with('success', 'Student deleted successfully');
+                
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error deleting student: ' . $e->getMessage());
             
             if (request()->ajax()) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+                return response()->json(['success' => false, 'message' => 'Error deleting student'], 500);
             }
             
-            return redirect()->route('students.index')
-                ->with('error', 'Error deleting student: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to delete student. ' . $e->getMessage());
         }
     }
 }
