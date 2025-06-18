@@ -188,6 +188,10 @@
                                         class="delete-btn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
                                         <i class="fas fa-trash mr-1"></i> Delete
                                     </button>
+                                    <a href="{{ route('Lessons.student', $student['id']) }}"
+                                        class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
+                                        <i class="fas fa-calendar-alt mr-1"></i> Lessons
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -478,10 +482,6 @@
                     deleteConfirmPopup.classList.add('hidden');
                     successPopup.classList.add('hidden');
                 }
-            });
-        });
-    </script>
-@endsection
             });
         });
     </script>
