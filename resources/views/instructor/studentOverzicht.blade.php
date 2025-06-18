@@ -1,80 +1,4 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Overview - Rijschool Vierkante Wielen</title>
-    <!-- Include Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Include Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        .bg-navy-50 {
-            background-color: #f0f4f8;
-        }
-
-        .bg-navy-100 {
-            background-color: #d8e2f3;
-        }
-
-        .bg-navy-600 {
-            background-color: #1e40af;
-        }
-
-        .bg-navy-700 {
-            background-color: #1e3a8a;
-        }
-
-        .text-navy-600 {
-            color: #1e40af;
-        }
-
-        .text-navy-700 {
-            color: #1e3a8a;
-        }
-
-        .text-navy-800 {
-            color: #1e3570;
-        }
-
-        .text-navy-900 {
-            color: #172554;
-        }
-
-        .hover\:bg-navy-50:hover {
-            background-color: #f0f4f8;
-        }
-
-        .hover\:bg-navy-700:hover {
-            background-color: #1e3a8a;
-        }
-
-        .hover\:text-navy-700:hover {
-            color: #1e3a8a;
-        }
-
-        .hover\:text-navy-800:hover {
-            color: #1e3570;
-        }
-
-        .focus\:ring-offset-2:focus {
-            --tw-ring-offset-width: 2px;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-50">
-    
-
-    <!-- Main Content -->
-    
-
-
-        <!-- Content Area -->
-        <div class="flex-1">
-            @extends('layouts.main')
+@extends('layouts.main')
 
 @section('title', 'Student Overview - Rijschool Vierkante Wielen')
 
@@ -82,7 +6,8 @@
     <!-- Page header -->
     <div class="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold text-navy-800">Student Overview</h2>
-        <a href="#" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-navy-800 uppercase tracking-widest hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all">
+        <a href="{{ route('students.create') }}"
+            class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-navy-800 uppercase tracking-widest hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all">
             <i class="fas fa-plus mr-2"></i>Add New Student
         </a>
     </div>
@@ -140,8 +65,7 @@
         <div class="flex flex-col md:flex-row gap-4 justify-between">
             <div class="flex flex-col md:flex-row gap-4">
                 <div>
-                    <label for="status-filter"
-                        class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select id="status-filter"
                         class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-600 focus:border-navy-600 block w-full p-2.5">
                         <option value="">All Status</option>
@@ -151,8 +75,7 @@
                     </select>
                 </div>
                 <div>
-                    <label for="package-filter"
-                        class="block text-sm font-medium text-gray-700 mb-1">Package</label>
+                    <label for="package-filter" class="block text-sm font-medium text-gray-700 mb-1">Package</label>
                     <select id="package-filter"
                         class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-navy-600 focus:border-navy-600 block w-full p-2.5">
                         <option value="">All Packages</option>
@@ -246,8 +169,7 @@
                                     <span
                                         class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Completed</span>
                                 @elseif($student['status'] == 'on-hold')
-                                    <span
-                                        class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">On
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">On
                                         Hold</span>
                                 @else
                                     <span
@@ -256,11 +178,17 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center space-x-3">
-                                    <a href="#"
+                                    <a href="{{ route('students.edit', $student['id']) }}"
                                         class="bg-yellow-500 hover:bg-yellow-400 text-navy-800 py-1 px-3 rounded-md text-sm inline-flex items-center">
                                         <i class="fas fa-edit mr-1"></i> Edit
                                     </a>
-                                    <a href="#"
+                                    <button type="button"
+                                        data-student-id="{{ $student['id'] }}"
+                                        data-student-name="{{ $student['firstname'] }} {{ $student['lastname'] }}"
+                                        class="delete-btn bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
+                                    <a href="{{ route('Lessons.student', $student['id']) }}"
                                         class="bg-navy-600 hover:bg-navy-700 text-white py-1 px-3 rounded-md text-sm inline-flex items-center">
                                         <i class="fas fa-calendar-alt mr-1"></i> Lessons
                                     </a>
@@ -318,55 +246,115 @@
             </div>
         @endif
     </div>
+
+    <!-- Confirmation Popup -->
+    <div id="delete-confirm-popup" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity"></div>
+            
+            <!-- Modal panel -->
+            <div class="relative bg-white rounded-lg max-w-md w-full mx-auto shadow-lg">
+                <div class="p-6">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2 text-center">
+                        Confirm Delete
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-center" id="confirm-message">
+                        Are you sure you want to delete this student?
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <button id="cancel-delete" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <form id="delete-form" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div id="success-popup" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity"></div>
+            
+            <!-- Modal panel -->
+            <div class="relative bg-white rounded-lg max-w-md w-full mx-auto shadow-lg">
+                <div class="p-6">
+                    <div class="mb-4 text-center">
+                        <i class="fas fa-check-circle text-green-500 text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2 text-center" id="success-message">
+                        The student has been deleted.
+                    </h3>
+                    <div class="flex justify-center mt-4">
+                        <button id="close-success" class="px-4 py-2 bg-navy-600 text-white rounded hover:bg-navy-700">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
-<script>
-    // Simple filtering functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusFilter = document.getElementById('status-filter');
-        const packageFilter = document.getElementById('package-filter');
-        const searchInput = document.getElementById('search');
-        const tableRows = document.querySelectorAll('tbody tr');
-        const tableBody = document.querySelector('tbody');
+    <script>
+        // Simple filtering functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusFilter = document.getElementById('status-filter');
+            const packageFilter = document.getElementById('package-filter');
+            const searchInput = document.getElementById('search');
+            const tableRows = document.querySelectorAll('tbody tr');
+            const tableBody = document.querySelector('tbody');
 
-        function applyFilters() {
-            const statusValue = statusFilter.value.toLowerCase();
-            const packageValue = packageFilter.value.toLowerCase();
-            const searchValue = searchInput.value.toLowerCase();
+            function applyFilters() {
+                const statusValue = statusFilter.value.toLowerCase();
+                const packageValue = packageFilter.value.toLowerCase();
+                const searchValue = searchInput.value.toLowerCase();
 
-            let visibleCount = 0;
+                let visibleCount = 0;
 
-            tableRows.forEach(row => {
-                if (row.querySelector('td[colspan="6"]')) {
-                    // This is already the "no results" row
-                    return;
-                }
+                tableRows.forEach(row => {
+                    if (row.querySelector('td[colspan="6"]')) {
+                        // This is already the "no results" row
+                        return;
+                    }
 
-                const studentName = row.querySelector('td:first-child').textContent.toLowerCase();
-                const statusText = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-                const packageText = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const studentName = row.querySelector('td:first-child').textContent.toLowerCase();
+                    const statusText = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+                    const packageText = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
 
-                const matchesStatus = !statusValue || statusText.includes(statusValue);
-                const matchesPackage = !packageValue || packageText.includes(packageValue);
-                const matchesSearch = !searchValue || studentName.includes(searchValue);
+                    const matchesStatus = !statusValue || statusText.includes(statusValue);
+                    const matchesPackage = !packageValue || packageText.includes(packageValue);
+                    const matchesSearch = !searchValue || studentName.includes(searchValue);
 
-                if (matchesStatus && matchesPackage && matchesSearch) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+                    if (matchesStatus && matchesPackage && matchesSearch) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
 
-            // Check if we need to show the "no results" message
-            const noResultsRow = document.getElementById('no-results-row');
+                // Check if we need to show the "no results" message
+                const noResultsRow = document.getElementById('no-results-row');
 
-            if (visibleCount === 0 && !noResultsRow && tableRows.length > 0) {
-                // Create and insert a "no results from filter" row
-                const newRow = document.createElement('tr');
-                newRow.id = 'no-results-row';
-                newRow.innerHTML = `
+                if (visibleCount === 0 && !noResultsRow && tableRows.length > 0) {
+                    // Create and insert a "no results from filter" row
+                    const newRow = document.createElement('tr');
+                    newRow.id = 'no-results-row';
+                    newRow.innerHTML = `
                     <td colspan="6" class="px-6 py-12 whitespace-nowrap text-center">
                         <div class="flex flex-col items-center justify-center">
                             <div class="text-navy-700 mb-3">
@@ -381,39 +369,134 @@
                         </div>
                     </td>
                 `;
-                tableBody.appendChild(newRow);
-            } else if (visibleCount > 0 && noResultsRow) {
-                // Remove the "no results" row if we have visible results again
-                noResultsRow.remove();
-            }
-        }
-
-        // Function to reset all filters
-        window.resetFilters = function() {
-            statusFilter.value = '';
-            packageFilter.value = '';
-            searchInput.value = '';
-
-            // Remove the "no results" row
-            const noResultsRow = document.getElementById('no-results-row');
-            if (noResultsRow) {
-                noResultsRow.remove();
+                    tableBody.appendChild(newRow);
+                } else if (visibleCount > 0 && noResultsRow) {
+                    // Remove the "no results" row if we have visible results again
+                    noResultsRow.remove();
+                }
             }
 
-            // Show all rows except the original "no results" row
-            tableRows.forEach(row => {
-                if (!row.querySelector('td[colspan="6"]')) {
-                    row.style.display = '';
+            // Function to reset all filters
+            window.resetFilters = function() {
+                statusFilter.value = '';
+                packageFilter.value = '';
+                searchInput.value = '';
+
+                // Remove the "no results" row
+                const noResultsRow = document.getElementById('no-results-row');
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+
+                // Show all rows except the original "no results" row
+                tableRows.forEach(row => {
+                    if (!row.querySelector('td[colspan="6"]')) {
+                        row.style.display = '';
+                    }
+                });
+            };
+
+            statusFilter.addEventListener('change', applyFilters);
+            packageFilter.addEventListener('change', applyFilters);
+            searchInput.addEventListener('input', applyFilters);
+        });
+    </script>
+
+    <script>
+        // Delete functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const deleteConfirmPopup = document.getElementById('delete-confirm-popup');
+            const deleteForm = document.getElementById('delete-form');
+            const cancelDeleteBtn = document.getElementById('cancel-delete');
+            const confirmMessage = document.getElementById('confirm-message');
+            const successPopup = document.getElementById('success-popup');
+            const closeSuccessBtn = document.getElementById('close-success');
+            const successMessage = document.getElementById('success-message');
+
+            // Show confirm popup when delete button is clicked
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-student-id');
+                    const studentName = this.getAttribute('data-student-name');
+                    
+                    // Update the form action to use the correct route
+                    deleteForm.action = `/admin/students/${studentId}`;
+                    confirmMessage.textContent = `Are you sure you want to delete ${studentName}?`;
+                    deleteConfirmPopup.classList.remove('hidden');
+                });
+            });
+
+            // Hide confirm popup when cancel is clicked
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteConfirmPopup.classList.add('hidden');
+            });
+
+            // Handle form submission with Ajax
+            deleteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const action = this.action;
+                
+                fetch(action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    deleteConfirmPopup.classList.add('hidden');
+                    
+                    if (data.success) {
+                        successMessage.textContent = 'Student deleted successfully.';
+                    } else {
+                        successMessage.textContent = data.message || 'Student deleted.';
+                    }
+                    
+                    successPopup.classList.remove('hidden');
+                    
+                    // Auto-hide success popup after 2 seconds
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    deleteConfirmPopup.classList.add('hidden');
+                    successMessage.textContent = 'Error deleting student. Please try again.';
+                    successPopup.classList.remove('hidden');
+                });
+            });
+
+            // Hide success popup when OK is clicked
+            closeSuccessBtn.addEventListener('click', function() {
+                successPopup.classList.add('hidden');
+                window.location.reload();
+            });
+
+            // Close popups when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === deleteConfirmPopup || e.target === successPopup) {
+                    deleteConfirmPopup.classList.add('hidden');
+                    successPopup.classList.add('hidden');
                 }
             });
-        };
 
-        statusFilter.addEventListener('change', applyFilters);
-        packageFilter.addEventListener('change', applyFilters);
-        searchInput.addEventListener('input', applyFilters);
-    });
-</script>
+            // Close popups when ESC key is pressed
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    deleteConfirmPopup.classList.add('hidden');
+                    successPopup.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 @endsection
-</body>
-
-</html>

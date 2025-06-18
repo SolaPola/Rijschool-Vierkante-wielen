@@ -34,7 +34,7 @@ Route::fallback(function () {
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth'])->name('dashboard');
 
 
-   //route to instructors overview
+//route to instructors overview
 
 
 //route to package overview
@@ -48,7 +48,6 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
-
 
 // Student specific routes
 Route::middleware([StudentMiddleware::class])->prefix('student')->group(function () {
@@ -74,14 +73,17 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
     Route::get('/accounts/{user}/edit', [UserController::class, 'edit'])->name('accounts.edit');
     Route::put('/accounts/{user}', [UserController::class, 'update'])->name('accounts.update');
     Route::delete('/accounts/{user}', [UserController::class, 'destroy'])->name('accounts.destroy');
-    
+
     // Instructor management routes
     Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
     Route::get('/instructors/{instructors}/delete', [App\Http\Controllers\InstructorController::class, 'delete'])->name('instructors.delete');
-    
+
     // Student management routes
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/{student}/delete', [StudentController::class, 'delete'])->name('students.delete');
+    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    // Change from GET to DELETE for proper RESTful deletion
+    Route::delete('/students/{student}', [StudentController::class, 'delete'])->name('students.delete');
 });
 
 require __DIR__ . '/auth.php';
@@ -89,7 +91,7 @@ require __DIR__ . '/auth.php';
 Route::middleware([InstructorMiddleware::class])->group(function () {
     // Replace the original route with the instructor-specific one
     Route::get('/Cars', 'App\Http\Controllers\Carscontroler@instructorIndex')->name('Cars.index');
-    
+
     // Keep the other routes the same since instructors should only view cars, not modify them
     Route::get('/Cars/{id}', 'App\Http\Controllers\Carscontroler@show')->name('Cars.show');
 });
@@ -104,13 +106,24 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::put('/Admin/Cars/{id}', [Carscontroler::class, 'update'])->name('Admin.Cars.update');
     Route::put('/Admin/Cars/{id}/maintenance', [Carscontroler::class, 'setMaintenance'])->name('Admin.Cars.maintenance');
     Route::delete('/Admin/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Admin.Cars.destroy');
+
+
+    // Regular Car routes for admin use as well
+    Route::get('/Cars', [Carscontroler::class, 'index'])->name('Cars.index');
+    Route::post('/Cars', [Carscontroler::class, 'store'])->name('Cars.store');
+    Route::get('/Cars/create', [Carscontroler::class, 'create'])->name('Cars.create');
+    Route::get('/Cars/{id}', [Carscontroler::class, 'show'])->name('Cars.show');
+    Route::get('/Cars/{id}/edit', [Carscontroler::class, 'edit'])->name('Cars.edit');
+    Route::put('/Cars/{id}', [Carscontroler::class, 'update'])->name('Cars.update');
+    Route::delete('/Cars/{id}', [Carscontroler::class, 'destroy'])->name('Cars.destroy');
     Route::post('/Admin/Cars/{id}/cancel-lessons', [Carscontroler::class, 'cancelAllLessons'])->name('Admin.Cars.cancelLessons');
+
 });
 
 // Update instructor routes - fix the route naming issue
 Route::middleware([InstructorMiddleware::class])->group(function () {
     // Instructors can only view cars, not create/edit/delete them
-    Route::get('/instructor/cars', [Carscontroler::class, 'instructorIndex'])->name('Instructor.Cars.index'); 
+    Route::get('/instructor/cars', [Carscontroler::class, 'instructorIndex'])->name('Instructor.Cars.index');
     Route::get('/instructor/cars/{id}', [Carscontroler::class, 'show'])->name('Instructor.Cars.show');
 });
 
@@ -153,10 +166,10 @@ Route::middleware(['auth'])->group(function () {
     // Lessons Routes - Special routes first with correctly named methods
     Route::get('/Lessons/instructors', [LessonsController::class, 'instructorLessons'])->name('Lessons.instructors');
     Route::get('/Lessons/instructor', [LessonsController::class, 'instructorLessons'])->name('Lessons.instructor');
-    
+
     Route::get('/Lessons/student/{studentId}', [LessonsController::class, 'getStudentLessons'])->name('Lessons.student');
     Route::get('/Lessons/car', [LessonsController::class, 'getCarLessons'])->name('Lessons.car');
-    
+
     // Standard CRUD routes for lessons
     Route::get('/Lessons', [LessonsController::class, 'index'])->name('Lessons.index');
     Route::post('/Lessons', [LessonsController::class, 'store'])->name('Lessons.store');
@@ -180,13 +193,13 @@ Route::middleware(['auth'])->group(function () {
 
 // Student routes
 
-    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
-    Route::get('/student/lessons', [LessonsController::class, 'studentLessons'])->name('student.lessons');
-    Route::get('/student/lessons/{id}', [LessonsController::class, 'studentShowLesson'])->name('student.lessons.show');
-    Route::get('/student/lessons/{id}/feedback', [LessonsController::class, 'studentFeedbackForm'])->name('student.lessons.feedback');
-    Route::post('/student/lessons/{id}/feedback', [LessonsController::class, 'studentStoreFeedback'])->name('student.lessons.saveFeedback');
+Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])->name('student.dashboard');
+Route::get('/student/lessons', [LessonsController::class, 'studentLessons'])->name('student.lessons');
+Route::get('/student/lessons/{id}', [LessonsController::class, 'studentShowLesson'])->name('student.lessons.show');
+Route::get('/student/lessons/{id}/feedback', [LessonsController::class, 'studentFeedbackForm'])->name('student.lessons.feedback');
+Route::post('/student/lessons/{id}/feedback', [LessonsController::class, 'studentStoreFeedback'])->name('student.lessons.saveFeedback');
 
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

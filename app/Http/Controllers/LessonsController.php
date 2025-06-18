@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Car;
-use App\Models\User;
-use App\Models\Instructor;
-use App\Models\Registration;
-use App\Models\Student;
 use App\Models\Lesson;
+use App\Models\Student;
+use App\Models\Car;
+use App\Models\Instructor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
 
 class LessonsController extends Controller
 {
@@ -382,9 +378,60 @@ class LessonsController extends Controller
      */
     public function getStudentLessons($studentId)
     {
-        $lessons = DB::select('CALL GetDrivingLessonsByStudent(?)', [$studentId]);
-        
-        return view('lessons.student', compact('lessons', 'studentId'));
+        try {
+            // Get the student
+            $student = Student::with('user')->findOrFail($studentId);
+            
+            // Get all lessons for this student
+            $lessons = Lesson::where('student_id', $studentId)
+                ->with(['instructor.user', 'car'])
+                ->orderBy('start_time', 'desc')
+                ->get();
+            
+            // Format lessons for display
+            $formattedLessons = $lessons->map(function($lesson) {
+                // Handle different column names based on database structure
+                $startTime = $lesson->start_time ?? $lesson->start_datetime ?? null;
+                $endTime = $lesson->end_time ?? $lesson->end_datetime ?? null;
+                
+                $instructorName = "Unknown";
+                if ($lesson->instructor && $lesson->instructor->user) {
+                    $instructorName = $lesson->instructor->user->firstname . ' ' . $lesson->instructor->user->lastname;
+                }
+                
+                $carInfo = "No vehicle";
+                if ($lesson->car) {
+                    $carInfo = $lesson->car->brand . ' ' . $lesson->car->model . ' (' . $lesson->car->license_plate . ')';
+                }
+                
+                return [
+                    'id' => $lesson->id,
+                    'start_time' => $startTime ? date('Y-m-d H:i', strtotime($startTime)) : 'Not scheduled',
+                    'end_time' => $endTime ? date('Y-m-d H:i', strtotime($endTime)) : 'Not scheduled',
+                    'duration' => $lesson->duration ?? '60 min',
+                    'status' => $lesson->status ?? $lesson->lesson_status ?? 'Unknown',
+                    'instructor_name' => $instructorName,
+                    'car_info' => $carInfo,
+                    'notes' => $lesson->notes ?? $lesson->remark ?? '',
+                ];
+            });
+            
+            // Count statistics
+            $totalLessons = $formattedLessons->count();
+            $completedLessons = $formattedLessons->where('status', 'completed')->count();
+            $upcomingLessons = $formattedLessons->where('status', 'scheduled')->count();
+            
+            return view('lessons.student', compact(
+                'student', 
+                'formattedLessons', 
+                'totalLessons', 
+                'completedLessons', 
+                'upcomingLessons'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error retrieving student lessons: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error retrieving lessons: ' . $e->getMessage());
+        }
     }
 
     /**
