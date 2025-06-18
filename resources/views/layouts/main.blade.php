@@ -76,6 +76,9 @@
             @yield('content')
         </div>
     </div>
+
+    <!-- Footer -->
+    <!-- ... footer code ... -->
     
     @yield('scripts')
 </body>

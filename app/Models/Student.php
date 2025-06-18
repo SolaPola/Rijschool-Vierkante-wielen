@@ -14,19 +14,17 @@ class Student extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'user_id',
         'relation_number',
         'isactive',
-        'remark',
+        'remark'
     ];
 
     /**
-     * Get the user that owns this student profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Get the user that owns the student.
      */
     public function user(): BelongsTo
     {
